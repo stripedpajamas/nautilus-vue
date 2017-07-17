@@ -8,6 +8,7 @@
     >
       <v-list>
         <v-list-tile
+          :to="item.route"
           value="true"
           v-for="(item, i) in items"
           :key="i"
@@ -90,8 +91,8 @@
         leftDrawer: true,
         rightDrawer: false,
         items: [
-          { icon: 'keyboard', title: 'Shell' },
-          { icon: 'extension', title: 'Administration' },
+          { icon: 'keyboard', title: 'Shell', route: '/shell' },
+          { icon: 'extension', title: 'Administration', route: '/admin' },
         ],
       };
     },
