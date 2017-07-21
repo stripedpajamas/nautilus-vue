@@ -14,8 +14,10 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
   },
   "dependencies": {
-    "node-sass": "^4.5.3",
-    "sass-loader": "^6.0.6",
+    "koa": "^2.3.0",
+    "koa-better-router": "^2.1.1",
+    "koa-static": "^4.0.1",
+    "mongoose": "^4.11.3",
     "vue": "^2.3.4",
     "vue-router": "^2.3.1",
     "vuetify": "^0.13.0",
@@ -23,6 +25,8 @@
     "vuex-router-sync": "^4.2.0"
   },
   "devDependencies": {
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
     "autoprefixer": "^6.7.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^7.1.1",

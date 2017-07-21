@@ -2,9 +2,8 @@
   <v-app light>
     <v-navigation-drawer
       persistent
-      :mini-variant.sync="mini"
-      v-model="leftDrawer"
       enable-resize-watcher
+      v-model="leftDrawer"
     >
       <v-list>
         <v-list-tile
@@ -64,11 +63,13 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar fixed>
+    <v-toolbar dark fixed prominent class="blue-grey darken-3">
       <v-toolbar-side-icon @click.native.stop="leftDrawer = !leftDrawer" light></v-toolbar-side-icon>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-side-icon @click.native.stop="rightDrawer = !rightDrawer"></v-toolbar-side-icon>
+      <v-btn icon dark @click.native.stop="rightDrawer = !rightDrawer">
+        <v-icon dark>account_box</v-icon>
+      </v-btn>
     </v-toolbar>
     <main>
       <v-container fluid>
@@ -87,7 +88,6 @@
     data() {
       return {
         title: 'Nautilus',
-        mini: false,
         leftDrawer: true,
         rightDrawer: false,
         items: [
