@@ -7,15 +7,38 @@ import { sync } from 'vuex-router-sync';
 import '../node_modules/vuetify/dist/vuetify.min.css';
 import App from './App';
 import router from './router';
-import storeModules from './store';
+import modules from './store';
 
 Vue.use(Vuex);
 Vue.use(Vuetify);
 Vue.config.productionTip = false;
 const store = new Vuex.Store({
-  storeModules,
+  modules,
 });
 sync(store, router);
+
+/* Require authentication route guard */
+router.beforeEach((to, from, next) => {
+  // if we aren't logging in
+  if (to.path !== '/login') {
+    // and we aren't authenticated
+    if (!store.state.user.isAuthenticated) {
+      // redirect to the login
+      return next({ path: '/login' });
+    }
+  }
+  return next();
+});
+
+/* Add janky focus directive */
+Vue.directive('focus', {
+  bind() {
+    const object = this.el;
+    Vue.nextTick(() => {
+      object.focus();
+    });
+  },
+});
 
 /* eslint-disable no-new */
 new Vue({

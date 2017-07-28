@@ -1,7 +1,7 @@
 <template>
   <div class="shell">
     <v-card class="shell__output">
-      <v-card-text>Command output goes here</v-card-text>
+      <v-card-text>{{ selectedClient.domain }}</v-card-text>
     </v-card>
     <v-text-field
       class="shell__input"
@@ -13,8 +13,15 @@
   </div>
 </template>
 <script>
+  import { mapState } from 'vuex';
+
   export default {
     name: 'Shell',
+    computed: {
+      ...mapState({
+        selectedClient: state => state.client.selectedClient,
+      }),
+    },
   };
 </script>
 
@@ -22,7 +29,7 @@
   .shell {
     display: flex;
     flex-direction: column;
-    min-height: 84vh;
+    min-height: 88vh;
     &__output {
       flex: 1;
     }

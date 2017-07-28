@@ -9,6 +9,9 @@
     "test": {
       "presets": ["env", "stage-2"],
       "plugins": [ "istanbul" ]
+    },
+    "server": {
+      "presets": ["env", "stage-2"]
     }
   }
 }

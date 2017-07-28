@@ -1,17 +1,24 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Shell from '@/components/Shell';
-import Admin from '@/components/Admin';
+import ClientAdmin from '@/components/admin/Client';
+import UserAdmin from '@/components/admin/User';
 import Login from '@/components/Login';
+import ClientSelect from '@/components/ClientSelect';
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'Login',
       component: Login,
+    },
+    {
+      path: '/',
+      name: 'Client Select',
+      component: ClientSelect,
     },
     {
       path: '/shell',
@@ -19,9 +26,14 @@ export default new Router({
       component: Shell,
     },
     {
-      path: '/admin',
-      name: 'Admin',
-      component: Admin,
+      path: '/admin/clients',
+      name: 'Client Management',
+      component: ClientAdmin,
+    },
+    {
+      path: '/admin/users',
+      name: 'User Management',
+      component: UserAdmin,
     },
   ],
 });
