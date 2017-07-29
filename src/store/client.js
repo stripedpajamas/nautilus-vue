@@ -2,7 +2,6 @@ import Vue from 'vue';
 import axios from 'axios';
 import {
   UPDATE_CLIENT_LIST,
-  SELECT_CLIENT,
   SET_NEW_CLIENT_NAME,
   SET_NEW_CLIENT_DOMAIN,
   SET_NEW_CLIENT_CREDS,
@@ -14,6 +13,7 @@ import {
   ADD_NEW_CLIENT,
   UPDATE_CLIENT,
   REMOVE_CLIENT,
+  CANCEL_UPDATE_CLIENT,
   ADD_ERROR,
   ADD_SUCCESS,
 } from './types';
@@ -36,9 +36,6 @@ export default {
   mutations: {
     [UPDATE_CLIENT_LIST](state, { clientList }) {
       Vue.set(state, 'clients', clientList);
-    },
-    [SELECT_CLIENT](state, { client }) {
-      Vue.set(state, 'selectedClient', client);
     },
     [SET_NEW_CLIENT_NAME](state, { name }) {
       Vue.set(state.newClient, 'name', name);
@@ -76,6 +73,9 @@ export default {
       // reset state since action took care of actual update
       Vue.set(state, 'clientToUpdate', {});
     },
+    [CANCEL_UPDATE_CLIENT](state) {
+      Vue.set(state, 'clientToUpdate', {});
+    },
     [REMOVE_CLIENT](state) {
       // reset state since action took care of actual removal
       Vue.set(state, 'clientToRemove', {});
@@ -99,10 +99,6 @@ export default {
         .catch((e) => {
           commit(ADD_ERROR, { message: `API call failed: ${e.message}` });
         });
-    },
-    [SELECT_CLIENT]({ commit, state }, { clientName }) {
-      const client = state.clients.find(c => c.name === clientName);
-      commit(SELECT_CLIENT, { client });
     },
     [SET_NEW_CLIENT_NAME]({ commit }, { name }) {
       commit(SET_NEW_CLIENT_NAME, { name });
@@ -130,9 +126,12 @@ export default {
       const client = state.clients.find(c => c.name === clientName);
       if (client) commit(SET_CLIENT_TO_REMOVE, { client: Object.assign({}, client) });
     },
+    [CANCEL_UPDATE_CLIENT]({ commit }) {
+      commit(CANCEL_UPDATE_CLIENT);
+    },
     [ADD_NEW_CLIENT]({ commit, dispatch, state, rootState }) {
       const url = `${rootState.main.apiHost}/api/clients`;
-      axios(url, { ...state.newClient }, {
+      axios.post(url, { ...state.newClient }, {
         headers: { Authorization: `Bearer ${rootState.main.token}` },
       }).then((res) => {
         if (res.status === 200) {

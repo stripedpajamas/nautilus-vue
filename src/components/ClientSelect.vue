@@ -4,10 +4,12 @@
       <v-card-title class="title">Select a client to get started:</v-card-title>
       <v-card-text>
         <v-select
+          :tab="0"
           :items="clientNames"
           label="Select a client"
           v-model="selectedClientName"
           autocomplete
+          @keyup.enter.native="selectClient"
         ></v-select>
       </v-card-text>
       <v-card-actions>

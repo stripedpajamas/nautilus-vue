@@ -7,6 +7,11 @@
       v-model="leftDrawer"
     >
       <v-list>
+        <v-layout row>
+          <v-flex xs10 offset-xs1>
+            <v-btn v-if="Object.keys(selectedClient).length" @click.native="endSession" block error large>End Session</v-btn>
+          </v-flex>
+        </v-layout>
         <v-list-group v-if="isAdmin" :value="sidebarAdmin.active" :key="sidebarAdmin.title">
           <v-list-tile slot="item">
             <v-list-tile-action>
@@ -59,7 +64,6 @@
       right
       enable-resize-watcher
       overflow
-      absolute
     >
       <v-toolbar flat class="transparent">
         <v-list class="pa-0">
@@ -76,7 +80,7 @@
         </v-list>
       </v-toolbar>
       <v-list dense>
-        <v-list-tile>
+        <v-list-tile :to="'/user'">
           <v-list-tile-action>
             <v-icon>vpn_key</v-icon>
           </v-list-tile-action>
@@ -121,6 +125,7 @@
     UPDATE_CLIENT_LIST,
     SELECT_CLIENT,
     LOGOUT,
+    END_SESSION,
   } from './store/types';
   import Notification from './components/helpers/Notification';
 
@@ -159,7 +164,7 @@
         isAdmin: state => state.user.user.isAdmin,
         fullName: state => state.user.user.fullName,
         clients: state => state.client.clients,
-        selectedClient: state => state.client.selectedClient,
+        selectedClient: state => state.shell.selectedClient,
       }),
       ...mapGetters([
         'clientNames',
@@ -176,6 +181,7 @@
         updateClientList: UPDATE_CLIENT_LIST,
         selectClientAction: SELECT_CLIENT,
         logoutAction: LOGOUT,
+        endSessionAction: END_SESSION,
       }),
       activeClientClass(client) {
         return client === this.selectedClient.name ? 'list__tile--active' : '';
@@ -190,6 +196,10 @@
       logout() {
         this.logoutAction();
         this.$router.push('/login');
+      },
+      endSession() {
+        this.endSessionAction();
+        this.$router.push('/');
       },
     },
     components: {

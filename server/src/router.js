@@ -72,7 +72,6 @@ apiRouter.put('/clients/:id', async (ctx) => {
 /**
  * Users
  */
-
 apiRouter.post('/users/login', async (ctx) => {
   const { username, password } = ctx.request.body;
   const user = await auth.authenticate(username, password);
@@ -85,6 +84,16 @@ apiRouter.post('/users/login', async (ctx) => {
   }
 });
 
+apiRouter.get('/users', async (ctx) => {
+  try {
+    const data = await User.find({}, 'fullName username isAdmin');
+    ctx.body = { ok: true, data };
+  } catch (e) {
+    ctx.status = 503;
+    ctx.body = { ok: false, message: e.message };
+  }
+});
+
 apiRouter.post('/users', async (ctx) => {
   const { fullName, username, password, isAdmin } = ctx.request.body;
   try {
@@ -94,6 +103,38 @@ apiRouter.post('/users', async (ctx) => {
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
+});
+
+apiRouter.del('/users/:id', async (ctx) => {
+  try {
+    await User.findByIdAndRemove(ctx.params.id);
+    ctx.body = { ok: true };
+  } catch (e) {
+    ctx.status = 503;
+    ctx.body = { ok: false, message: e.message };
+  }
+});
+
+apiRouter.put('/users/:id', async (ctx) => {
+  const { fullName, username, isAdmin, password } = ctx.request.body;
+  return User.findById(ctx.params.id)
+      .then((u) => {
+        const user = u;
+        user.fullName = fullName;
+        user.username = username;
+        user.isAdmin = isAdmin;
+        if (password) {
+          user.password = password;
+        }
+        return user.save()
+          .then(() => {
+            ctx.body = { ok: true };
+          });
+      })
+    .catch((e) => {
+      ctx.status = 503;
+      ctx.body = { ok: false, message: e.message };
+    });
 });
 
 export default apiRouter;

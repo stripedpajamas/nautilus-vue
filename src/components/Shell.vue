@@ -19,7 +19,7 @@
     name: 'Shell',
     computed: {
       ...mapState({
-        selectedClient: state => state.client.selectedClient,
+        selectedClient: state => state.shell.selectedClient,
       }),
     },
   };

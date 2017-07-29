@@ -8,16 +8,21 @@
       </v-flex>
       <v-flex xs12>
         <v-card>
-          <v-card-title class="title">Add Client</v-card-title>
-          <v-card-text>
-            <v-text-field label="Name" v-model="newClientNameModel" autofocus></v-text-field>
-            <v-text-field label="Domain" v-model="newClientDomainModel"></v-text-field>
-            <v-switch label="Default Credentials" v-model="newClientCredsModel"></v-switch>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click.native="addNewClient" bottom right primary :disabled="!newClientNameModel || !newClientDomainModel">Save</v-btn>
-          </v-card-actions>
+          <form>
+            <v-card-title class="title">Add Client</v-card-title>
+            <v-card-text>
+              <v-text-field label="Name" v-model="newClientNameModel" autofocus></v-text-field>
+              <v-text-field label="Domain" v-model="newClientDomainModel"></v-text-field>
+              <v-switch label="Default Credentials" v-model="newClientCredsModel"></v-switch>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn @click.native="addNewClient" bottom right primary
+                     :disabled="!newClientNameModel || !newClientDomainModel"
+                     type="submit">Save
+              </v-btn>
+            </v-card-actions>
+          </form>
         </v-card>
       </v-flex>
       <v-flex xs12>
@@ -32,15 +37,21 @@
             ></v-select>
             <transition name="slide-x-transition">
               <v-card v-if="Object.keys(clientToUpdate).length">
-                <v-card-text>
-                  <v-text-field label="Name" v-model="updatedClientNameModel" required autofocus></v-text-field>
-                  <v-text-field label="Domain" v-model="updatedClientDomainModel" required></v-text-field>
-                  <v-switch label="Default Credentials" v-model="updatedClientCredsModel"></v-switch>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn @click.native="updateClient" bottom right primary>Save</v-btn>
-                </v-card-actions>
+                <form>
+                  <v-card-text>
+                    <v-text-field label="Name" v-model="updatedClientNameModel" required
+                                  autofocus></v-text-field>
+                    <v-text-field label="Domain" v-model="updatedClientDomainModel"
+                                  required></v-text-field>
+                    <v-switch label="Default Credentials"
+                              v-model="updatedClientCredsModel"></v-switch>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn @click.native="cancelUpdateClient" bottom right>Cancel</v-btn>
+                    <v-btn @click.native="updateClient" bottom right primary type="submit">Save</v-btn>
+                  </v-card-actions>
+                </form>
               </v-card>
             </transition>
           </v-card-text>
@@ -59,7 +70,9 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click.native="removeClient" bottom right error :disabled="!clientToRemove._id">Delete</v-btn>
+            <v-btn @click.native="removeClient" bottom right error :disabled="!clientToRemove._id">
+              Delete
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -78,6 +91,7 @@
     UPDATE_CLIENT_DOMAIN,
     UPDATE_CLIENT_CREDS,
     SET_CLIENT_TO_REMOVE,
+    CANCEL_UPDATE_CLIENT,
     ADD_NEW_CLIENT,
     UPDATE_CLIENT,
     REMOVE_CLIENT,
@@ -87,7 +101,6 @@
     name: 'ClientAdmin',
     computed: {
       ...mapState({
-        clients: state => state.client.clients,
         newClient: state => state.client.newClient,
         clientToUpdate: state => state.client.clientToUpdate,
         clientToRemove: state => state.client.clientToRemove,
@@ -170,10 +183,19 @@
         updateClientDomain: UPDATE_CLIENT_DOMAIN,
         updateClientCreds: UPDATE_CLIENT_CREDS,
         setClientToRemove: SET_CLIENT_TO_REMOVE,
-        addNewClient: ADD_NEW_CLIENT,
-        updateClient: UPDATE_CLIENT,
+        cancelUpdateClient: CANCEL_UPDATE_CLIENT,
+        addNewClientAction: ADD_NEW_CLIENT,
+        updateClientAction: UPDATE_CLIENT,
         removeClient: REMOVE_CLIENT,
       }),
+      addNewClient(e) {
+        e.preventDefault();
+        this.addNewClientAction();
+      },
+      updateClient(e) {
+        e.preventDefault();
+        this.updateClientAction();
+      },
     },
   };
 </script>

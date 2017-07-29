@@ -1,10 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import Login from '@/components/Login';
+import ClientSelect from '@/components/ClientSelect';
 import Shell from '@/components/Shell';
 import ClientAdmin from '@/components/admin/Client';
 import UserAdmin from '@/components/admin/User';
-import Login from '@/components/Login';
-import ClientSelect from '@/components/ClientSelect';
+import UserSettings from '@/components/user/UserSettings';
 
 Vue.use(Router);
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/admin/users',
       name: 'User Management',
       component: UserAdmin,
+    },
+    {
+      path: '/user',
+      name: 'User Settings',
+      component: UserSettings,
     },
   ],
 });

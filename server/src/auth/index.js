@@ -8,8 +8,8 @@ export default {
         return user.checkPassword(p)
           .then((res) => {
             if (res) {
-              const { fullName, username, isAdmin } = user;
-              return { fullName, username, isAdmin };
+              const { fullName, username, isAdmin, _id } = user;
+              return { fullName, username, isAdmin, _id };
             }
             return { error: 'Authentication failed' };
           });
