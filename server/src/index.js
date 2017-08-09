@@ -120,6 +120,6 @@ pino.debug('Starting up everything');
   const httpServer = await http.createServer(app.callback());
   await httpServer.listen(process.env.PORT || 9090);
   await wsApp.listen(6993);
-  pino.debug(`Server started on port ${process.env.PORT || 9090}`);
-  pino.debug('WS Server started on port 6993');
+  pino.info(`Server started on port ${process.env.PORT || 9090}`);
+  pino.info('WS Server started on port 6993');
 })();

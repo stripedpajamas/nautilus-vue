@@ -40,7 +40,7 @@ apiRouter.get('/clients', async (ctx) => {
     pino.debug('Retrieved client list from database successfully');
     ctx.body = { ok: true, data };
   } catch (e) {
-    pino.error({ error: e.message }, 'Failed to retrieve client list from database');
+    pino.error({ ctx, error: e.message }, 'Failed to retrieve client list from database');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -55,7 +55,7 @@ apiRouter.post('/clients', async (ctx) => {
       pino.info({ name, domain, defaultCreds }, 'Added new client to MongoDB');
       ctx.body = { ok: true };
     } catch (e) {
-      pino.error({ name, domain, defaultCreds }, 'Failed to add new client to MongoDB');
+      pino.error({ ctx, name, domain, defaultCreds, error: e.message }, 'Failed to add new client to MongoDB');
       ctx.status = 503;
       ctx.body = { ok: false, message: e.message };
     }
@@ -73,7 +73,7 @@ apiRouter.get('/clients/:id', async (ctx) => {
     pino.debug({ data }, 'Client info retrieved');
     ctx.body = { ok: true, data };
   } catch (e) {
-    pino.error({ id: ctx.params.id }, 'Failed to retrieve client info from database');
+    pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to retrieve client info from database');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -86,7 +86,7 @@ apiRouter.del('/clients/:id', async (ctx) => {
     pino.info({ id: ctx.params.id }, 'Client deleted');
     ctx.body = { ok: true };
   } catch (e) {
-    pino.error({ id: ctx.params.id }, 'Failed to delete client');
+    pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to delete client');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -100,7 +100,7 @@ apiRouter.put('/clients/:id', async (ctx) => {
     pino.info({ id: ctx.params.id, name, domain, defaultCreds }, 'Client edited successfully');
     ctx.body = { ok: true };
   } catch (e) {
-    pino.error({ id: ctx.params.id }, 'Failed to edit client');
+    pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to edit client');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -131,7 +131,7 @@ apiRouter.get('/users', async (ctx) => {
     pino.debug(data, 'User list retrieved');
     ctx.body = { ok: true, data };
   } catch (e) {
-    pino.error(ctx, 'Failed to retrieve user list');
+    pino.error({ ctx, error: e.message }, 'Failed to retrieve user list');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -145,7 +145,7 @@ apiRouter.post('/users', async (ctx) => {
     pino.info({ fullName, username, isAdmin }, 'User added successfully');
     ctx.body = { ok: true };
   } catch (e) {
-    pino.error({ fullName, username, isAdmin }, 'Failed to add user');
+    pino.error({ ctx, fullName, username, isAdmin, error: e.message }, 'Failed to add user');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -158,7 +158,7 @@ apiRouter.del('/users/:id', async (ctx) => {
     pino.info({ id: ctx.params.id }, 'User deleted successfully');
     ctx.body = { ok: true };
   } catch (e) {
-    pino.error({ id: ctx.params.id }, 'Failed to delete user');
+    pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to delete user');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -185,7 +185,7 @@ apiRouter.put('/users/:id', async (ctx) => {
           });
       })
     .catch((e) => {
-      pino.error({ id: ctx.params.id }, 'Failed to edit user');
+      pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to edit user');
       ctx.status = 503;
       ctx.body = { ok: false, message: e.message };
     });
