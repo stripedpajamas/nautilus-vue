@@ -1,9 +1,20 @@
 import mongoose from 'mongoose';
 
 const ClientSchema = new mongoose.Schema({
-  name: String,
-  domain: String,
-  defaultCreds: Boolean,
+  name: {
+    type: String,
+    required: true,
+    index: { unique: true },
+  },
+  domain: {
+    type: String,
+    required: true,
+    index: { unique: true },
+  },
+  defaultCreds: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 export default mongoose.model('Client', ClientSchema);

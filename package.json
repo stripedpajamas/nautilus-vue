@@ -31,6 +31,7 @@
     "koa-static": "^4.0.1",
     "koa-websocket": "^4.0.0",
     "mongoose": "^4.11.5",
+    "pino": "^4.7.1",
     "vue": "^2.3.4",
     "vue-router": "^2.3.1",
     "vuetify": "^0.14.8",
