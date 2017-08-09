@@ -21,7 +21,6 @@ import {
 export default {
   state: {
     clients: [],
-    selectedClient: {},
     newClient: {
       name: '',
       domain: '',

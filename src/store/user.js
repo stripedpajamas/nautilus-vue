@@ -1,9 +1,11 @@
 import Vue from 'vue';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import Cookies from 'js-cookie';
 import {
   ADD_ERROR,
   ADD_SUCCESS,
+  CHECK_COOKIE,
   AUTHENTICATE_USER,
   SET_LOGIN_USERNAME,
   SET_LOGIN_PASSWORD,
@@ -116,6 +118,23 @@ export default {
     },
   },
   actions: {
+    [CHECK_COOKIE]({ commit, dispatch, rootState }) {
+      const cookie = Cookies.get('nautilus');
+      if (cookie) {
+        axios.get(`${rootState.main.apiHost}/api/check`, {
+          headers: { Authorization: `Bearer ${cookie}` },
+        }).then((res) => {
+          if (res.status === 200) {
+            const user = jwt.decode(cookie).data;
+            commit(AUTHENTICATE_USER, { user });
+            commit(SET_TOKEN, { token: cookie });
+            dispatch(UPDATE_CLIENT_LIST);
+          } else {
+            Cookies.remove('nautilus');
+          }
+        });
+      }
+    },
     [SET_LOGIN_USERNAME]({ commit }, { username }) {
       commit(SET_LOGIN_USERNAME, { username });
     },
@@ -128,6 +147,7 @@ export default {
         password: state.loginPassword,
       }).then((res) => {
         if (res.status === 200 && res.data.ok) {
+          Cookies.set('nautilus', res.data.jwt, { expires: 1 });
           const user = jwt.decode(res.data.jwt).data;
           commit(AUTHENTICATE_USER, { user });
           commit(SET_TOKEN, { token: res.data.jwt });
@@ -142,6 +162,7 @@ export default {
       });
     },
     [LOGOUT]({ commit, dispatch }) {
+      Cookies.remove('nautilus');
       dispatch(CLEAR_TOKEN);
       commit(LOGOUT);
     },

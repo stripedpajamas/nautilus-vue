@@ -11,6 +11,7 @@ import {
 export default {
   state: {
     apiHost: process.env.NODE_ENV === 'development' ? 'http://localhost:9090' : '',
+    wsHost: `ws://${window.location.hostname}:6993`,
     token: '',
     success: '',
     error: '',

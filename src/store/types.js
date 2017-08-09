@@ -13,6 +13,7 @@ export const CLEAR_TOKEN = 'CLEAR_TOKEN';
 /**
  * Authentication actions
  */
+export const CHECK_COOKIE = 'CHECK_COOKIE';
 export const AUTHENTICATE_USER = 'AUTHENTICATE_USER';
 export const SET_LOGIN_USERNAME = 'SET_LOGIN_USERNAME';
 export const SET_LOGIN_PASSWORD = 'SET_LOGIN_PASSWORD';
@@ -22,6 +23,11 @@ export const LOGOUT = 'LOGOUT';
  * Shell-specific actions
  */
 export const SELECT_CLIENT = 'SELECT_CLIENT';
+export const SET_CUSTOM_USERNAME = 'SET_CUSTOM_USERNAME';
+export const SET_CUSTOM_PASSWORD = 'SET_CUSTOM_PASSWORD';
+export const INITIALIZE = 'INITIALIZE';
+export const SEND_COMMAND = 'SEND_COMMAND';
+export const ADD_RESPONSE = 'ADD_RESPONSE';
 export const END_SESSION = 'END_SESSION';
 
 /**

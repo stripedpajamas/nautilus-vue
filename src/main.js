@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
 import { sync } from 'vuex-router-sync';
+// import Cookies from 'js-cookie';
 import '../node_modules/vuetify/dist/vuetify.min.css';
 import App from './App';
 import router from './router';
@@ -28,16 +29,6 @@ router.beforeEach((to, from, next) => {
     }
   }
   return next();
-});
-
-/* Add janky focus directive */
-Vue.directive('focus', {
-  bind() {
-    const object = this.el;
-    Vue.nextTick(() => {
-      object.focus();
-    });
-  },
 });
 
 /* eslint-disable no-new */

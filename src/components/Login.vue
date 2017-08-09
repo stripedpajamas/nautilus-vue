@@ -21,6 +21,7 @@
 <script>
   import { mapState, mapActions } from 'vuex';
   import {
+    CHECK_COOKIE,
     AUTHENTICATE_USER,
     SET_LOGIN_USERNAME,
     SET_LOGIN_PASSWORD,
@@ -34,6 +35,11 @@
           this.$router.push('/');
         }
       },
+    },
+    beforeMount() {
+      if (!this.isAuthenticated) {
+        this.checkCookie();
+      }
     },
     computed: {
       ...mapState({
@@ -60,6 +66,7 @@
     },
     methods: {
       ...mapActions({
+        checkCookie: CHECK_COOKIE,
         setLoginUsername: SET_LOGIN_USERNAME,
         setLoginPassword: SET_LOGIN_PASSWORD,
         authenticateUser: AUTHENTICATE_USER,

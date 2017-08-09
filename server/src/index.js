@@ -1,16 +1,35 @@
 import Koa from 'koa';
 import helmet from 'koa-helmet';
 import koaJwt from 'koa-jwt';
+import jwt from 'jsonwebtoken';
 import bodyParser from 'koa-bodyparser';
 import serve from 'koa-static';
 import mongoose from 'mongoose';
 import path from 'path';
 import http from 'http';
-import io from 'socket.io';
-import apiRouter from './router';
+import websockify from 'koa-websocket';
+import { apiRouter, wsRouter } from './router';
 import connectDatabase from './data/db';
 
+const jwtSecret = process.env.JWT_SECRET || 'twoseventythree tomato sauce';
+
+/**
+ * JWT verify function for WebSocket connection
+ */
+const verifyClient = (info, cb) => {
+  const token = info.req.headers['sec-websocket-protocol'];
+  if (!token) return cb(false, 401, 'Unauthorized');
+  return jwt.verify(token, jwtSecret, (err) => {
+    if (err) return cb(false, 401, 'Unauthorized');
+    return cb(true);
+  });
+};
+
 const app = new Koa();
+const wsApp = new Koa();
+websockify(wsApp, {
+  verifyClient,
+});
 
 /**
  * Middleware init
@@ -31,18 +50,20 @@ app.use((ctx, next) => (
 ));
 
 /* Set CORS policy */
-app.use((ctx, next) => {
+const setCors = (ctx, next) => {
   ctx.set('Access-Control-Allow-Origin', '*');
-  ctx.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  ctx.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, token');
   ctx.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   if (ctx.method === 'OPTIONS') {
     ctx.status = 200;
   }
   return next();
-});
+};
+app.use(setCors);
+wsApp.use(setCors);
 
 /* Lock down routes with JWTs */
-app.use(koaJwt({ secret: 'twoseventythree tomato sauce' }).unless({ method: 'OPTIONS', path: [/^\/api\/users\/login/] }));
+app.use(koaJwt({ secret: jwtSecret }).unless({ method: 'OPTIONS', path: [/^\/api\/users\/login/] }));
 
 /* Check for DB connection on every API request */
 app.use((ctx, next) => {
@@ -54,6 +75,7 @@ app.use((ctx, next) => {
 
 /* Load routes */
 app.use(apiRouter.middleware());
+wsApp.ws.use(wsRouter.middleware());
 
 /* Serve Vue app */
 app.use(serve(path.resolve(__dirname, '../../dist')));
@@ -67,7 +89,7 @@ app.on('error', (error, ctx) => {
 });
 
 /**
- * Connect to MongoDB, start Socket.io, start server
+ * Connect to MongoDB, start Socket.io, start servers
  */
 (async () => {
   try {
@@ -77,7 +99,8 @@ app.on('error', (error, ctx) => {
     process.exit();
   }
   const httpServer = await http.createServer(app.callback());
-  await io(httpServer);
   await httpServer.listen(process.env.PORT || 9090);
+  await wsApp.listen(6993);
   console.log(`Server started on port ${process.env.PORT || 9090}`);
+  console.log('WS Server started on port 6993');
 })();

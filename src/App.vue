@@ -188,6 +188,7 @@
       },
       selectClient(clientName) {
         // select client in state
+        this.endSessionAction(); // just in case we're already connected to someone else
         this.selectClientAction({ clientName });
 
         // goto client selection

@@ -1,13 +1,29 @@
 import Router from 'koa-better-router';
 import jwt from 'jsonwebtoken';
+import ps from './shell';
 import User from './data/models/User';
 import Client from './data/models/Client';
 import auth from './auth';
+
+const jwtSecret = process.env.JWT_SECRET || 'twoseventythree tomato sauce';
 
 /**
  * Router for the API
  */
 const apiRouter = Router({ prefix: '/api' }).loadMethods();
+const wsRouter = Router().loadMethods();
+
+/**
+ * WebSocket
+ */
+wsRouter.get('/*', ps);
+
+/**
+ * JWT Check
+ */
+apiRouter.get('/check', (ctx) => {
+  ctx.body = { ok: true };
+});
 
 /**
  * Clients
@@ -24,7 +40,7 @@ apiRouter.get('/clients', async (ctx) => {
 
 apiRouter.post('/clients', async (ctx) => {
   const { name, domain, defaultCreds } = ctx.request.body;
-  if (name && domain && defaultCreds) {
+  if (name && domain && typeof defaultCreds !== 'undefined') {
     try {
       await Client.create({ name, domain, defaultCreds });
       ctx.body = { ok: true };
@@ -79,7 +95,7 @@ apiRouter.post('/users/login', async (ctx) => {
     ctx.status = 401;
     ctx.body = { ok: false, message: user.error };
   } else {
-    const token = jwt.sign({ data: user }, 'twoseventythree tomato sauce', { expiresIn: '4h' });
+    const token = jwt.sign({ data: user }, jwtSecret, { expiresIn: '1d' });
     ctx.body = { ok: true, jwt: token };
   }
 });
@@ -137,4 +153,7 @@ apiRouter.put('/users/:id', async (ctx) => {
     });
 });
 
-export default apiRouter;
+export {
+  apiRouter,
+  wsRouter,
+};
