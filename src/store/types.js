@@ -15,6 +15,9 @@ export const CLEAR_TOKEN = 'CLEAR_TOKEN';
  */
 export const CHECK_COOKIE = 'CHECK_COOKIE';
 export const AUTHENTICATE_USER = 'AUTHENTICATE_USER';
+export const AUTH_DUO = 'AUTH_DUO';
+export const CONFIGURE_DUO = 'CONFIGURE_DUO';
+export const SET_NEEDS_DUO = 'SET_NEEDS_DUO';
 export const SET_LOGIN_USERNAME = 'SET_LOGIN_USERNAME';
 export const SET_LOGIN_PASSWORD = 'SET_LOGIN_PASSWORD';
 export const LOGOUT = 'LOGOUT';
@@ -33,18 +36,14 @@ export const END_SESSION = 'END_SESSION';
 /**
  * Adding a client
  */
-export const SET_NEW_CLIENT_NAME = 'SET_NEW_CLIENT_NAME';
-export const SET_NEW_CLIENT_DOMAIN = 'SET_NEW_CLIENT_DOMAIN';
-export const SET_NEW_CLIENT_CREDS = 'SET_NEW_CLIENT_CREDS';
+export const SET_NEW_CLIENT = 'SET_NEW_CLIENT';
 export const ADD_NEW_CLIENT = 'ADD_NEW_CLIENT';
 
 /**
  * Updating a client
  */
 export const SET_CLIENT_TO_UPDATE = 'SET_CLIENT_TO_UPDATE';
-export const UPDATE_CLIENT_NAME = 'UPDATE_CLIENT_NAME';
-export const UPDATE_CLIENT_DOMAIN = 'UPDATE_CLIENT_DOMAIN';
-export const UPDATE_CLIENT_CREDS = 'UPDATE_CLIENT_CREDS';
+export const UPDATE_CLIENT_INFO = 'UPDATE_CLIENT_INFO';
 export const UPDATE_CLIENT = 'UPDATE_CLIENT';
 export const CANCEL_UPDATE_CLIENT = 'CANCEL_UPDATE_CLIENT';
 

@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12 sm6 offset-sm3 class="pt-4">
-      <v-card>
+      <v-card v-if="!authedNeedsDuo">
         <v-card-title class="headline">
           Login to access Nautilus:
         </v-card-title>
@@ -14,12 +14,16 @@
           <v-btn @click.native="authenticateUser" primary large right bottom>Submit</v-btn>
         </v-card-actions>
       </v-card>
+      <v-card v-else>
+        <Duo />
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
   import { mapState, mapActions } from 'vuex';
+  import Duo from './helpers/Duo';
   import {
     CHECK_COOKIE,
     AUTHENTICATE_USER,
@@ -44,6 +48,7 @@
     computed: {
       ...mapState({
         isAuthenticated: state => state.user.isAuthenticated,
+        authedNeedsDuo: state => state.user.authedNeedsDuo,
         loginUsername: state => state.user.loginUsername,
         loginPassword: state => state.user.loginPassword,
       }),
@@ -71,6 +76,9 @@
         setLoginPassword: SET_LOGIN_PASSWORD,
         authenticateUser: AUTHENTICATE_USER,
       }),
+    },
+    components: {
+      Duo,
     },
   };
 </script>

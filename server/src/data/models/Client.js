@@ -15,6 +15,14 @@ const ClientSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
+  includeExpireCheck: {
+    type: Boolean,
+    required: true,
+  },
+  includeLicenseCheck: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 export default mongoose.model('Client', ClientSchema);

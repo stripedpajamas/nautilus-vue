@@ -4,7 +4,6 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
 import { sync } from 'vuex-router-sync';
-// import Cookies from 'js-cookie';
 import '../node_modules/vuetify/dist/vuetify.min.css';
 import App from './App';
 import router from './router';

@@ -1,9 +1,12 @@
 import { spawn } from 'child_process';
 import path from 'path';
+import pino from '../lib/logger';
 
 const PSDIR = process.env.PSDIR;
+pino.debug({ PSDIR }, 'PowerShell directory set');
 
 const init = (socket, connectionInfo) => {
+  pino.debug(connectionInfo, 'Starting a new PowerShell session');
   socket.send('Please wait while I connect you to Office 365...');
   let params;
   if (!connectionInfo.defaultCreds) {
@@ -17,7 +20,7 @@ const init = (socket, connectionInfo) => {
 };
 
 const handleCommand = (socket, command) => {
-  console.log(command);
+  pino.debug({ command }, 'Received a PowerShell command');
   if (command === 'exit') {
     socket.send('exit');
     // ps.stdin.write('exit\r\n');
@@ -28,6 +31,7 @@ const handleCommand = (socket, command) => {
 };
 
 export default (ctx) => {
+  pino.debug(ctx, 'New WebSocket connection initiated');
   // if (!psdir) throw new Error('PowerShell directory required');
   const args = [
     '-NoLogo',
@@ -67,9 +71,10 @@ export default (ctx) => {
   // });
 
   ctx.websocket.on('close', () => {
+    pino.debug(ctx, 'Closing WebSocket session');
     // wait for PSSession to close out, then kill PS
     setTimeout(() => {
-      console.log('KILLED');
+      pino.debug('Killing PowerShell');
       // ps.kill();
     }, 2000);
   });

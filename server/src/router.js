@@ -1,15 +1,15 @@
 import Router from 'koa-better-router';
 import jwt from 'jsonwebtoken';
-import Pino from 'pino';
+import duo from 'duo_web';
+import pino from './lib/logger';
 import ps from './shell';
 import User from './data/models/User';
 import Client from './data/models/Client';
+import DuoData from './data/models/Duo';
 import auth from './auth';
 
 const jwtSecret = process.env.JWT_SECRET || 'twoseventythree tomato sauce';
-const pino = Pino({
-  level: process.env.DEBUG ? 'debug' : 'info',
-});
+const companyId = process.env.COMPANY_ID || 'qv';
 
 /**
  * Router for the API
@@ -48,14 +48,22 @@ apiRouter.get('/clients', async (ctx) => {
 
 apiRouter.post('/clients', async (ctx) => {
   pino.debug(ctx, 'Clients endpoint posted to');
-  const { name, domain, defaultCreds } = ctx.request.body;
-  if (name && domain && typeof defaultCreds !== 'undefined') {
+  const { name, domain, defaultCreds, includeExpireCheck, includeLicenseCheck } = ctx.request.body;
+  if (name && domain && [defaultCreds, includeExpireCheck, includeLicenseCheck].every(bool => typeof bool !== 'undefined')) {
     try {
-      await Client.create({ name, domain, defaultCreds });
-      pino.info({ name, domain, defaultCreds }, 'Added new client to MongoDB');
+      await Client.create({ name, domain, defaultCreds, includeExpireCheck, includeLicenseCheck });
+      pino.info({ name, domain, defaultCreds, includeExpireCheck, includeLicenseCheck }, 'Added new client to MongoDB');
       ctx.body = { ok: true };
     } catch (e) {
-      pino.error({ ctx, name, domain, defaultCreds, error: e.message }, 'Failed to add new client to MongoDB');
+      pino.error({
+        ctx,
+        name,
+        domain,
+        defaultCreds,
+        includeExpireCheck,
+        includeLicenseCheck,
+        error: e.message,
+      }, 'Failed to add new client to MongoDB');
       ctx.status = 503;
       ctx.body = { ok: false, message: e.message };
     }
@@ -94,10 +102,23 @@ apiRouter.del('/clients/:id', async (ctx) => {
 
 apiRouter.put('/clients/:id', async (ctx) => {
   pino.debug(ctx, 'Edit specific client id endpoint requested');
-  const { name, domain, defaultCreds } = ctx.request.body;
+  const { name, domain, defaultCreds, includeExpireCheck, includeLicenseCheck } = ctx.request.body;
   try {
-    await Client.findByIdAndUpdate(ctx.params.id, { name, domain, defaultCreds });
-    pino.info({ id: ctx.params.id, name, domain, defaultCreds }, 'Client edited successfully');
+    await Client.findByIdAndUpdate(ctx.params.id, {
+      name,
+      domain,
+      defaultCreds,
+      includeExpireCheck,
+      includeLicenseCheck,
+    });
+    pino.info({
+      id: ctx.params.id,
+      name,
+      domain,
+      defaultCreds,
+      includeExpireCheck,
+      includeLicenseCheck,
+    }, 'Client edited successfully');
     ctx.body = { ok: true };
   } catch (e) {
     pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to edit client');
@@ -118,10 +139,59 @@ apiRouter.post('/users/login', async (ctx) => {
     ctx.status = 401;
     ctx.body = { ok: false, message: user.error };
   } else {
-    pino.info(user, 'User authenticated successfully, issuing JWT');
-    const token = jwt.sign({ data: user }, jwtSecret, { expiresIn: '1d' });
-    ctx.body = { ok: true, jwt: token };
+    pino.info(user, 'User authenticated successfully, sending Duo prompt');
+    return DuoData.findOne({ companyId })
+      .then((data) => {
+        const { ikey, skey, akey, api } = data.data;
+        const signedReq = duo.sign_request(ikey, skey, akey, user.username);
+        ctx.body = { ok: true, signedReq, api };
+      })
+      .catch((e) => {
+        pino.error('Failed to load Duo data');
+        ctx.status = 503;
+        ctx.body = { ok: false, message: e.message };
+      });
   }
+});
+
+apiRouter.post('/users/login/duo', (ctx, next) => {
+  // this endpoint should receive the response after Duo 2FA
+  // it will be the one to issue the jwt
+  const sr = ctx.request.body.signedRes;
+  if (sr) {
+    pino.debug({ sr }, 'Received signed response from client');
+    return DuoData.findOne({ companyId })
+      .then((duoData) => {
+        const { ikey, skey, akey } = duoData.data;
+        pino.debug({ ikey, skey, akey }, 'Found Duo info in DB');
+        const authenticatedUsername = duo.verify_response(ikey, skey, akey, sr);
+        pino.info({ authenticatedUsername }, 'Duo verified the response and gave us a username');
+        if (authenticatedUsername) {
+          return User.findOne({ username: authenticatedUsername })
+            .then((user) => {
+              if (user) {
+                pino.debug({ user }, 'Found user in DB');
+                const { fullName, username, isAdmin, _id } = user;
+                const data = { fullName, username, isAdmin, _id };
+                const token = jwt.sign({ data }, jwtSecret, { expiresIn: '1d' });
+                pino.debug({ token }, 'Sending JWT to client');
+                ctx.body = { ok: true, jwt: token };
+              }
+            });
+        }
+        ctx.status = 401;
+        ctx.body = { ok: false, message: 'Authentication failed' };
+        return next();
+      })
+      .catch((e) => {
+        pino.error('DB lookup failed for Duo or User');
+        ctx.status = 503;
+        ctx.body = { ok: false, message: e.message };
+      });
+  }
+  ctx.body = 401;
+  ctx.body = { ok: false, message: 'Invalid Duo Response' };
+  return next();
 });
 
 apiRouter.get('/users', async (ctx) => {

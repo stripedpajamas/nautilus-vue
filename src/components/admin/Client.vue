@@ -14,6 +14,8 @@
               <v-text-field label="Name" v-model="newClientNameModel" autofocus></v-text-field>
               <v-text-field label="Domain" v-model="newClientDomainModel"></v-text-field>
               <v-switch label="Default Credentials" v-model="newClientCredsModel"></v-switch>
+              <v-switch label="Include in Password Expiry Notices" v-model="newClientExpireModel"></v-switch>
+              <v-switch label="Include in License Check" v-model="newClientLicenseModel"></v-switch>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -45,6 +47,8 @@
                                   required></v-text-field>
                     <v-switch label="Default Credentials"
                               v-model="updatedClientCredsModel"></v-switch>
+                    <v-switch label="Include in Password Expiry Notices" v-model="updatedClientExpireModel"></v-switch>
+                    <v-switch label="Include in License Check" v-model="updatedClientLicenseModel"></v-switch>
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
@@ -83,13 +87,9 @@
 <script>
   import { mapState, mapActions, mapGetters } from 'vuex';
   import {
-    SET_NEW_CLIENT_NAME,
-    SET_NEW_CLIENT_DOMAIN,
-    SET_NEW_CLIENT_CREDS,
+    SET_NEW_CLIENT,
     SET_CLIENT_TO_UPDATE,
-    UPDATE_CLIENT_NAME,
-    UPDATE_CLIENT_DOMAIN,
-    UPDATE_CLIENT_CREDS,
+    UPDATE_CLIENT_INFO,
     SET_CLIENT_TO_REMOVE,
     CANCEL_UPDATE_CLIENT,
     ADD_NEW_CLIENT,
@@ -113,7 +113,7 @@
           return this.newClient.name;
         },
         set(newVal) {
-          this.setNewClientName({ name: newVal });
+          this.setNewClient({ key: 'name', value: newVal });
         },
       },
       newClientDomainModel: {
@@ -121,7 +121,7 @@
           return this.newClient.domain;
         },
         set(newVal) {
-          this.setNewClientDomain({ domain: newVal });
+          this.setNewClient({ key: 'domain', value: newVal });
         },
       },
       newClientCredsModel: {
@@ -129,7 +129,23 @@
           return this.newClient.defaultCreds;
         },
         set(newVal) {
-          this.setNewClientCreds({ defaultCreds: newVal });
+          this.setNewClient({ key: 'defaultCreds', value: newVal });
+        },
+      },
+      newClientExpireModel: {
+        get() {
+          return this.newClient.includeExpireCheck;
+        },
+        set(newVal) {
+          this.setNewClient({ key: 'includeExpireCheck', value: newVal });
+        },
+      },
+      newClientLicenseModel: {
+        get() {
+          return this.newClient.includeLicenseCheck;
+        },
+        set(newVal) {
+          this.setNewClient({ key: 'includeLicenseCheck', value: newVal });
         },
       },
       clientToUpdateModel: {
@@ -145,7 +161,7 @@
           return this.clientToUpdate.name;
         },
         set(newVal) {
-          this.updateClientName({ name: newVal });
+          this.updateClientInfo({ key: 'name', value: newVal });
         },
       },
       updatedClientDomainModel: {
@@ -153,7 +169,7 @@
           return this.clientToUpdate.domain;
         },
         set(newVal) {
-          this.updateClientDomain({ domain: newVal });
+          this.updateClientInfo({ key: 'domain', value: newVal });
         },
       },
       updatedClientCredsModel: {
@@ -161,7 +177,23 @@
           return this.clientToUpdate.defaultCreds;
         },
         set(newVal) {
-          this.updateClientCreds({ defaultCreds: newVal });
+          this.updateClientInfo({ key: 'defaultCreds', value: newVal });
+        },
+      },
+      updatedClientExpireModel: {
+        get() {
+          return this.clientToUpdate.includeExpireCheck;
+        },
+        set(newVal) {
+          this.updateClientInfo({ key: 'includeExpireCheck', value: newVal });
+        },
+      },
+      updatedClientLicenseModel: {
+        get() {
+          return this.clientToUpdate.includeLicenseCheck;
+        },
+        set(newVal) {
+          this.updateClientInfo({ key: 'includeLicenseCheck', value: newVal });
         },
       },
       clientToRemoveModel: {
@@ -175,13 +207,9 @@
     },
     methods: {
       ...mapActions({
-        setNewClientName: SET_NEW_CLIENT_NAME,
-        setNewClientDomain: SET_NEW_CLIENT_DOMAIN,
-        setNewClientCreds: SET_NEW_CLIENT_CREDS,
+        setNewClient: SET_NEW_CLIENT,
         setClientToUpdate: SET_CLIENT_TO_UPDATE,
-        updateClientName: UPDATE_CLIENT_NAME,
-        updateClientDomain: UPDATE_CLIENT_DOMAIN,
-        updateClientCreds: UPDATE_CLIENT_CREDS,
+        updateClientInfo: UPDATE_CLIENT_INFO,
         setClientToRemove: SET_CLIENT_TO_REMOVE,
         cancelUpdateClient: CANCEL_UPDATE_CLIENT,
         addNewClientAction: ADD_NEW_CLIENT,

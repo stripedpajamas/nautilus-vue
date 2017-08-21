@@ -2,13 +2,9 @@ import Vue from 'vue';
 import axios from 'axios';
 import {
   UPDATE_CLIENT_LIST,
-  SET_NEW_CLIENT_NAME,
-  SET_NEW_CLIENT_DOMAIN,
-  SET_NEW_CLIENT_CREDS,
+  SET_NEW_CLIENT,
   SET_CLIENT_TO_UPDATE,
-  UPDATE_CLIENT_NAME,
-  UPDATE_CLIENT_DOMAIN,
-  UPDATE_CLIENT_CREDS,
+  UPDATE_CLIENT_INFO,
   SET_CLIENT_TO_REMOVE,
   ADD_NEW_CLIENT,
   UPDATE_CLIENT,
@@ -25,6 +21,8 @@ export default {
       name: '',
       domain: '',
       defaultCreds: true,
+      includeExpireCheck: true,
+      includeLicenseCheck: true,
     },
     clientToUpdate: {},
     clientToRemove: {},
@@ -36,26 +34,14 @@ export default {
     [UPDATE_CLIENT_LIST](state, { clientList }) {
       Vue.set(state, 'clients', clientList);
     },
-    [SET_NEW_CLIENT_NAME](state, { name }) {
-      Vue.set(state.newClient, 'name', name);
-    },
-    [SET_NEW_CLIENT_DOMAIN](state, { domain }) {
-      Vue.set(state.newClient, 'domain', domain);
-    },
-    [SET_NEW_CLIENT_CREDS](state, { defaultCreds }) {
-      Vue.set(state.newClient, 'defaultCreds', defaultCreds);
+    [SET_NEW_CLIENT](state, { key, value }) {
+      Vue.set(state.newClient, key, value);
     },
     [SET_CLIENT_TO_UPDATE](state, { client }) {
       Vue.set(state, 'clientToUpdate', client);
     },
-    [UPDATE_CLIENT_NAME](state, { name }) {
-      Vue.set(state.clientToUpdate, 'name', name);
-    },
-    [UPDATE_CLIENT_DOMAIN](state, { domain }) {
-      Vue.set(state.clientToUpdate, 'domain', domain);
-    },
-    [UPDATE_CLIENT_CREDS](state, { defaultCreds }) {
-      Vue.set(state.clientToUpdate, 'defaultCreds', defaultCreds);
+    [UPDATE_CLIENT_INFO](state, { key, value }) {
+      Vue.set(state.clientToUpdate, key, value);
     },
     [SET_CLIENT_TO_REMOVE](state, { client }) {
       Vue.set(state, 'clientToRemove', client);
@@ -99,27 +85,15 @@ export default {
           commit(ADD_ERROR, { message: `API call failed: ${e.message}` });
         });
     },
-    [SET_NEW_CLIENT_NAME]({ commit }, { name }) {
-      commit(SET_NEW_CLIENT_NAME, { name });
-    },
-    [SET_NEW_CLIENT_DOMAIN]({ commit }, { domain }) {
-      commit(SET_NEW_CLIENT_DOMAIN, { domain });
-    },
-    [SET_NEW_CLIENT_CREDS]({ commit }, { defaultCreds }) {
-      commit(SET_NEW_CLIENT_CREDS, { defaultCreds });
+    [SET_NEW_CLIENT]({ commit }, { key, value }) {
+      commit(SET_NEW_CLIENT, { key, value });
     },
     [SET_CLIENT_TO_UPDATE]({ commit, state }, { clientName }) {
       const client = state.clients.find(c => c.name === clientName);
       if (client) commit(SET_CLIENT_TO_UPDATE, { client: Object.assign({}, client) });
     },
-    [UPDATE_CLIENT_NAME]({ commit }, { name }) {
-      commit(UPDATE_CLIENT_NAME, { name });
-    },
-    [UPDATE_CLIENT_DOMAIN]({ commit }, { domain }) {
-      commit(UPDATE_CLIENT_DOMAIN, { domain });
-    },
-    [UPDATE_CLIENT_CREDS]({ commit }, { defaultCreds }) {
-      commit(UPDATE_CLIENT_CREDS, { defaultCreds });
+    [UPDATE_CLIENT_INFO]({ commit }, { key, value }) {
+      commit(UPDATE_CLIENT_INFO, { key, value });
     },
     [SET_CLIENT_TO_REMOVE]({ commit, state }, { clientName }) {
       const client = state.clients.find(c => c.name === clientName);
@@ -146,8 +120,20 @@ export default {
     },
     [UPDATE_CLIENT]({ commit, dispatch, state, rootState }) {
       const url = `${rootState.main.apiHost}/api/clients/${state.clientToUpdate._id}`;
-      const { name, domain, defaultCreds } = state.clientToUpdate;
-      axios.put(url, { name, domain, defaultCreds }, {
+      const {
+        name,
+        domain,
+        defaultCreds,
+        includeExpireCheck,
+        includeLicenseCheck,
+      } = state.clientToUpdate;
+      axios.put(url, {
+        name,
+        domain,
+        defaultCreds,
+        includeExpireCheck,
+        includeLicenseCheck,
+      }, {
         headers: { Authorization: `Bearer ${rootState.main.token}` },
       }).then((res) => {
         if (res.status === 200) {

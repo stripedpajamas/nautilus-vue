@@ -7,15 +7,15 @@ import serve from 'koa-static';
 import mongoose from 'mongoose';
 import path from 'path';
 import http from 'http';
+import https from 'https';
+import sslify from 'koa-sslify';
 import websockify from 'koa-websocket';
-import Pino from 'pino';
+import le from './lib/cert';
+import pino from './lib/logger';
 import { apiRouter, wsRouter } from './router';
 import connectDatabase from './data/db';
 
 const jwtSecret = process.env.JWT_SECRET || 'twoseventythree tomato sauce';
-const pino = Pino({
-  level: process.env.DEBUG ? 'debug' : 'info',
-});
 
 /**
  * JWT verify function for WebSocket connection
@@ -117,9 +117,27 @@ pino.debug('Starting up everything');
     pino.error({ error: e.message }, 'Could not connect to MongoDB');
     process.exit();
   }
-  const httpServer = await http.createServer(app.callback());
-  await httpServer.listen(process.env.PORT || 9090);
-  await wsApp.listen(6993);
-  pino.info(`Server started on port ${process.env.PORT || 9090}`);
-  pino.info('WS Server started on port 6993');
+
+  let server;
+  let httpRedirectServer;
+
+  if (process.env.NODE_ENV === 'production') {
+    server = await https.createServer(le.httpsOptions, le.middleware(app.callback()));
+    httpRedirectServer = http.createServer(le.middleware((new Koa()).use(sslify()).callback()));
+  } else {
+    server = await http.createServer(app.callback());
+  }
+
+  try {
+    if (httpRedirectServer) {
+      await httpRedirectServer.listen(process.env.HTTPPORT || 80);
+      pino.info(`HTTP Server started on port ${process.env.PORT || 443} and redirecting`);
+    }
+    await server.listen(process.env.PORT || 443);
+    pino.info(`HTTPS Server started on port ${process.env.PORT || 443}`);
+    await wsApp.listen(6993);
+    pino.info('WS Server started on port 6993');
+  } catch (e) {
+    pino.error({ error: e.message }, 'Failed to start servers');
+  }
 })();

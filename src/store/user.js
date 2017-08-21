@@ -7,6 +7,9 @@ import {
   ADD_SUCCESS,
   CHECK_COOKIE,
   AUTHENTICATE_USER,
+  AUTH_DUO,
+  CONFIGURE_DUO,
+  SET_NEEDS_DUO,
   SET_LOGIN_USERNAME,
   SET_LOGIN_PASSWORD,
   SET_TOKEN,
@@ -35,6 +38,12 @@ export default {
     loginUsername: '',
     loginPassword: '',
     isAuthenticated: false,
+    authedNeedsDuo: false,
+    duo: {
+      api: '',
+      signedReq: '',
+      signedRes: '',
+    },
     user: {},
     users: [],
     newUser: {
@@ -53,8 +62,16 @@ export default {
     [AUTHENTICATE_USER](state, { user }) {
       Vue.set(state, 'loginUsername', '');
       Vue.set(state, 'loginPassword', '');
+      Vue.set(state, 'duo', { api: '', signedReq: '', signedRes: '' });
+      Vue.set(state, 'authedNeedsDuo', false);
       Vue.set(state, 'isAuthenticated', true);
       Vue.set(state, 'user', user);
+    },
+    [CONFIGURE_DUO](state, { key, value }) {
+      Vue.set(state.duo, key, value);
+    },
+    [SET_NEEDS_DUO](state, { value }) {
+      Vue.set(state, 'authedNeedsDuo', value);
     },
     [SET_LOGIN_USERNAME](state, { username }) {
       Vue.set(state, 'loginUsername', username);
@@ -141,10 +158,31 @@ export default {
     [SET_LOGIN_PASSWORD]({ commit }, { password }) {
       commit(SET_LOGIN_PASSWORD, { password });
     },
-    [AUTHENTICATE_USER]({ commit, dispatch, state, rootState }) {
+    [CONFIGURE_DUO]({ commit }, { key, value }) {
+      commit(CONFIGURE_DUO, { key, value });
+    },
+    [AUTHENTICATE_USER]({ commit, state, rootState }) {
       axios.post(`${rootState.main.apiHost}/api/users/login`, {
         username: state.loginUsername,
         password: state.loginPassword,
+      }).then((res) => {
+        if (res.status === 200 && res.data.ok) {
+          const { signedReq, api } = res.data;
+          commit(CONFIGURE_DUO, { key: 'api', value: api });
+          commit(CONFIGURE_DUO, { key: 'signedReq', value: signedReq });
+          commit(SET_NEEDS_DUO, { value: true });
+        } else {
+          commit(ADD_ERROR, { message: `Failed to authenticate: ${res.status}` });
+          commit(SET_LOGIN_PASSWORD, { password: '' });
+        }
+      }).catch((e) => {
+        commit(ADD_ERROR, { message: `Failed to authenticate: ${e.message}` });
+        commit(SET_LOGIN_PASSWORD, { password: '' });
+      });
+    },
+    [AUTH_DUO]({ commit, dispatch, state, rootState }) {
+      axios.post(`${rootState.main.apiHost}/api/users/login/duo`, {
+        signedRes: state.duo.signedRes,
       }).then((res) => {
         if (res.status === 200 && res.data.ok) {
           Cookies.set('nautilus', res.data.jwt, { expires: 1 });
@@ -154,12 +192,19 @@ export default {
           dispatch(UPDATE_CLIENT_LIST);
         } else {
           commit(ADD_ERROR, { message: `Failed to authenticate: ${res.status}` });
-          commit(SET_LOGIN_PASSWORD, { password: '' });
+          commit(CONFIGURE_DUO, { key: 'signedRes', value: '' });
+          commit(CONFIGURE_DUO, { key: 'signedReq', value: '' });
+          commit(CONFIGURE_DUO, { key: 'api', value: '' });
         }
       }).catch((e) => {
         commit(ADD_ERROR, { message: `Failed to authenticate: ${e.message}` });
-        commit(SET_LOGIN_PASSWORD, { password: '' });
+        commit(CONFIGURE_DUO, { key: 'signedRes', value: '' });
+        commit(CONFIGURE_DUO, { key: 'signedReq', value: '' });
+        commit(CONFIGURE_DUO, { key: 'api', value: '' });
       });
+    },
+    [SET_NEEDS_DUO]({ commit }, { value }) {
+      commit(SET_NEEDS_DUO, { value });
     },
     [LOGOUT]({ commit, dispatch }) {
       Cookies.remove('nautilus');
