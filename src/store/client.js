@@ -10,6 +10,7 @@ import {
   UPDATE_CLIENT,
   REMOVE_CLIENT,
   CANCEL_UPDATE_CLIENT,
+  CANCEL_REMOVE_CLIENT,
   ADD_ERROR,
   ADD_SUCCESS,
 } from './types';
@@ -61,6 +62,9 @@ export default {
     [CANCEL_UPDATE_CLIENT](state) {
       Vue.set(state, 'clientToUpdate', {});
     },
+    [CANCEL_REMOVE_CLIENT](state) {
+      Vue.set(state, 'clientToRemove', {});
+    },
     [REMOVE_CLIENT](state) {
       // reset state since action took care of actual removal
       Vue.set(state, 'clientToRemove', {});
@@ -101,6 +105,9 @@ export default {
     },
     [CANCEL_UPDATE_CLIENT]({ commit }) {
       commit(CANCEL_UPDATE_CLIENT);
+    },
+    [CANCEL_REMOVE_CLIENT]({ commit }) {
+      commit(CANCEL_REMOVE_CLIENT);
     },
     [ADD_NEW_CLIENT]({ commit, dispatch, state, rootState }) {
       const url = `${rootState.main.apiHost}/api/clients`;

@@ -1,22 +1,36 @@
 <template>
-  <v-card>
-    <form>
-      <v-card-title class="title">User Settings</v-card-title>
-      <v-card-text>
-        <v-text-field label="Password" type="password" v-model="changePasswordModel"></v-text-field>
-        <v-text-field
-          label="Confirm Password"
-          type="password"
-          v-model="confirmPassword"
-          :rules="passwordRules">
-        </v-text-field>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn type="submit" :disabled="saveDisable" @click.native="updateUser" primary bottom right>Save</v-btn>
-      </v-card-actions>
-    </form>
-  </v-card>
+  <v-tabs dark grow>
+    <v-toolbar class="blue-grey darken-1" dark>
+      <v-toolbar-title class="headline">User Settings</v-toolbar-title>
+      <v-tabs-bar class="blue-grey darken-1" slot="extension" dark>
+        <v-tabs-slider class="cyan accent-4"></v-tabs-slider>
+        <v-tabs-item :href="'#change-password'">
+          Change Password
+        </v-tabs-item>
+      </v-tabs-bar>
+    </v-toolbar>
+    <v-tabs-items>
+      <v-tabs-content id="change-password">
+        <v-card flat>
+          <form>
+            <v-card-text>
+              <v-text-field label="Password" type="password" v-model="changePasswordModel"></v-text-field>
+              <v-text-field
+                label="Confirm Password"
+                type="password"
+                v-model="confirmPassword"
+                :rules="passwordRules">
+              </v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn type="submit" :disabled="saveDisable" @click.native="updateUser" primary bottom right outline>Save</v-btn>
+            </v-card-actions>
+          </form>
+        </v-card>
+      </v-tabs-content>
+    </v-tabs-items>
+  </v-tabs>
 </template>
 <script>
   import { mapState, mapActions } from 'vuex';

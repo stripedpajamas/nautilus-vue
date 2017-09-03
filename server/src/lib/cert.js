@@ -2,7 +2,7 @@ import greenlock from 'greenlock-express';
 import path from 'path';
 import os from 'os';
 
-const domains = ['nautilus.quo.cc'];
+const domains = ['nautilus.quo.cc', 'nautilus.now.sh'];
 
 // Let's Encrypt
 const le = greenlock.create({

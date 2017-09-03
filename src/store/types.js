@@ -51,6 +51,7 @@ export const CANCEL_UPDATE_CLIENT = 'CANCEL_UPDATE_CLIENT';
  * Removing a client
  */
 export const SET_CLIENT_TO_REMOVE = 'SET_CLIENT_TO_REMOVE';
+export const CANCEL_REMOVE_CLIENT = 'CANCEL_REMOVE_CLIENT';
 export const REMOVE_CLIENT = 'REMOVE_CLIENT';
 
 /**
@@ -77,4 +78,5 @@ export const CANCEL_UPDATE_USER = 'CANCEL_UPDATE_USER';
  * Removing a user
  */
 export const SET_USER_TO_REMOVE = 'SET_USER_TO_REMOVE';
+export const CANCEL_REMOVE_USER = 'CANCEL_REMOVE_USER';
 export const REMOVE_USER = 'REMOVE_USER';

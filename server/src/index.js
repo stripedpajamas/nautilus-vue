@@ -8,7 +8,6 @@ import mongoose from 'mongoose';
 import path from 'path';
 import http from 'http';
 import https from 'https';
-import sslify from 'koa-sslify';
 import websockify from 'koa-websocket';
 import le from './lib/cert';
 import pino from './lib/logger';
@@ -16,6 +15,7 @@ import { apiRouter, wsRouter } from './router';
 import connectDatabase from './data/db';
 
 const jwtSecret = process.env.JWT_SECRET || 'twoseventythree tomato sauce';
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost/nautilus';
 
 /**
  * JWT verify function for WebSocket connection
@@ -49,6 +49,7 @@ websockify(wsApp, {
  */
 pino.debug('Initializing middleware');
 app.use(helmet());
+wsApp.ws.use(helmet());
 app.use(bodyParser());
 
 /* Catch 401s */
@@ -76,6 +77,10 @@ const setCors = (ctx, next) => {
 };
 app.use(setCors);
 wsApp.use(setCors);
+
+/* Serve Vue app */
+pino.debug('Serving up the Vue app');
+app.use(serve(path.resolve(__dirname, '../../dist')));
 
 /* Lock down routes with JWTs */
 app.use(koaJwt({ secret: jwtSecret }).unless({ method: 'OPTIONS', path: [/^\/api\/users\/login/] }));
@@ -111,28 +116,22 @@ app.on('error', (error, ctx) => {
 pino.debug('Starting up everything');
 (async () => {
   try {
-    await connectDatabase('mongodb://localhost/nautilus');
+    await connectDatabase(mongoUri);
     pino.debug('Connected to MongoDB');
   } catch (e) {
     pino.error({ error: e.message }, 'Could not connect to MongoDB');
-    process.exit();
+    process.exit(1);
   }
 
   let server;
-  let httpRedirectServer;
 
   if (process.env.NODE_ENV === 'production') {
     server = await https.createServer(le.httpsOptions, le.middleware(app.callback()));
-    httpRedirectServer = http.createServer(le.middleware((new Koa()).use(sslify()).callback()));
   } else {
     server = await http.createServer(app.callback());
   }
 
   try {
-    if (httpRedirectServer) {
-      await httpRedirectServer.listen(process.env.HTTPPORT || 80);
-      pino.info(`HTTP Server started on port ${process.env.PORT || 443} and redirecting`);
-    }
     await server.listen(process.env.PORT || 443);
     pino.info(`HTTPS Server started on port ${process.env.PORT || 443}`);
     await wsApp.listen(6993);

@@ -5,11 +5,12 @@
       persistent
       enable-resize-watcher
       v-model="leftDrawer"
+      light
     >
       <v-list>
         <v-layout row>
           <v-flex xs10 offset-xs1>
-            <v-btn v-if="Object.keys(selectedClient).length" @click.native="endSession" block error large>End Session</v-btn>
+            <v-btn v-if="Object.keys(selectedClient).length" @click.native="endSession" block error outline large>End Session</v-btn>
           </v-flex>
         </v-layout>
         <v-list-group v-if="isAdmin" :value="sidebarAdmin.active" :key="sidebarAdmin.title">
@@ -45,7 +46,11 @@
               <v-icon>keyboard_arrow_down</v-icon>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-tile @click.native="(e) => selectClient(client)" v-for="client in clientNames" :key="client">
+          <v-list-tile
+            @click.native="(e) => selectClient(client)"
+            v-for="client in clientNames"
+            :key="client"
+            class="list__tile--link">
             <v-list-tile-content>
               <v-list-tile-title :class="activeClientClass(client)">{{ client }}</v-list-tile-title>
             </v-list-tile-content>
@@ -68,11 +73,11 @@
       <v-toolbar flat class="transparent">
         <v-list class="pa-0">
           <v-list-tile avatar tag="div">
-            <v-list-tile-avatar class="bubble blue-grey white--text mr-2">
-            <span class="bubble__initials">
-              {{ userInitials }}
-            </span>
-            </v-list-tile-avatar>
+            <!--<v-list-tile-avatar class="bubble blue-grey white&#45;&#45;text mr-2">-->
+            <!--<span class="bubble__initials">-->
+              <!--{{ userInitials }}-->
+            <!--</span>-->
+            <!--</v-list-tile-avatar>-->
             <v-list-tile-content>
               <v-list-tile-title>{{ fullName }}</v-list-tile-title>
             </v-list-tile-content>
@@ -88,7 +93,7 @@
             <v-list-tile-title>Change Password</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile @click.native="logout">
+        <v-list-tile @click.native="logout" class="list__tile--link">
           <v-list-tile-action>
             <v-icon>exit_to_app</v-icon>
           </v-list-tile-action>
@@ -99,7 +104,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-toolbar dark fixed prominent class="blue-grey darken-3">
-      <v-toolbar-side-icon v-if="isAuthenticated" @click.native.stop="leftDrawer = !leftDrawer" light></v-toolbar-side-icon>
+      <v-toolbar-side-icon v-if="isAuthenticated" @click.native.stop="leftDrawer = !leftDrawer"></v-toolbar-side-icon>
       <v-toolbar-title><router-link :to="'/'">{{ title }}</router-link></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="isAuthenticated" icon dark @click.native.stop="rightDrawer = !rightDrawer">
@@ -219,9 +224,9 @@
   }
 
   .bubble {
-    min-width: 30px !important;
-    height: 30px;
-    border-radius: 50%;
+    /*min-width: 30px !important;*/
+    /*height: 56px;*/
+    /*border-radius: 50%;*/
     &__initials {
       width: 100%;
       font-size: 15px;

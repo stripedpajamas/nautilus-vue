@@ -30,6 +30,7 @@ import {
   UPDATE_USER,
   CANCEL_UPDATE_USER,
   SET_USER_TO_REMOVE,
+  CANCEL_REMOVE_USER,
   REMOVE_USER,
 } from './types';
 
@@ -123,6 +124,9 @@ export default {
     },
     [CANCEL_UPDATE_USER](state) {
       Vue.set(state, 'userToUpdate', {});
+    },
+    [CANCEL_REMOVE_USER](state) {
+      Vue.set(state, 'userToRemove', {});
     },
     [UPDATE_USER](state) {
       Vue.set(state, 'userToUpdate', {});
@@ -279,6 +283,9 @@ export default {
     [CANCEL_UPDATE_USER]({ commit }) {
       commit(CANCEL_UPDATE_USER);
     },
+    [CANCEL_REMOVE_USER]({ commit }) {
+      commit(CANCEL_REMOVE_USER);
+    },
     [UPDATE_USER]({ commit, state, dispatch, rootState }) {
       const url = `${rootState.main.apiHost}/api/users/${state.userToUpdate._id}`;
       const { fullName, username, password, isAdmin } = state.userToUpdate;
@@ -300,7 +307,7 @@ export default {
       const user = state.users.find(u => u.username === username);
       if (user && user.username === state.user.username) {
         commit(ADD_ERROR, { message: 'You can\'t delete yourself!' });
-        commit(SET_USER_TO_REMOVE, { user: {} });
+        commit(CANCEL_REMOVE_USER);
       } else if (user) {
         commit(SET_USER_TO_REMOVE, { user });
       }

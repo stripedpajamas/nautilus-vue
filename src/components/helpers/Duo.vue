@@ -43,7 +43,7 @@
   #duo-iframe {
     width: 100%;
     min-width: 304px;
-    max-width: 620px;
+    max-width: 820px;
     height: 330px;
     border: none;
   }

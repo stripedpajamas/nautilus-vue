@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card flat class="client-select">
     <form>
       <v-card-title class="title">Select a client to get started:</v-card-title>
       <v-card-text>
@@ -8,13 +8,13 @@
           :items="clientNames"
           label="Select a client"
           v-model="selectedClientName"
-          autocomplete
           @keyup.enter.native="selectClient"
+          autocomplete
         ></v-select>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="!selectedClientName" primary bottom right @click.native="selectClient">Connect</v-btn>
+        <v-btn :disabled="!selectedClientName" primary bottom right outline @click.native="selectClient">Connect</v-btn>
       </v-card-actions>
     </form>
   </v-card>
@@ -52,3 +52,10 @@
     },
   };
 </script>
+<style>
+  .client-select {
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, .1);
+  }
+</style>

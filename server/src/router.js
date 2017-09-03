@@ -173,7 +173,7 @@ apiRouter.post('/users/login/duo', (ctx, next) => {
                 pino.debug({ user }, 'Found user in DB');
                 const { fullName, username, isAdmin, _id } = user;
                 const data = { fullName, username, isAdmin, _id };
-                const token = jwt.sign({ data }, jwtSecret, { expiresIn: '1d' });
+                const token = jwt.sign({ data }, jwtSecret, { expiresIn: '4h' });
                 pino.debug({ token }, 'Sending JWT to client');
                 ctx.body = { ok: true, jwt: token };
               }

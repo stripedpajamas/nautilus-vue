@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const DuoSchema = new mongoose.Schema({
   companyId: {
@@ -26,4 +26,4 @@ const DuoSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model('Duo', DuoSchema);
+module.exports = mongoose.model('Duo', DuoSchema);

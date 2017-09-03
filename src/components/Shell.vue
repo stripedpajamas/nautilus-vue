@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="shell">
-      <v-card class="shell__output" ref="shellOutput">
+      <v-card flat class="shell__output" ref="shellOutput">
         <v-card-text class="subheading">
           <div v-for="item in response">
             <span v-if="item.from === 'self'" class="shell__output__self">
@@ -9,7 +9,6 @@
             </span>
             <span v-else class="shell__output__server" v-html="item.data"></span>
           </div>
-          <!--<div v-html="response"></div>-->
         </v-card-text>
       </v-card>
       <v-text-field
@@ -35,8 +34,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn bottom right @click.native="cancelCreds">Cancel</v-btn>
-            <v-btn type="submit "primary bottom right @click.native="submitCreds">Login</v-btn>
+            <v-btn bottom right outline @click.native="cancelCreds">Cancel</v-btn>
+            <v-btn type="submit "primary bottom right outline @click.native="submitCreds">Login</v-btn>
           </v-card-actions>
         </form>
       </v-card>
@@ -153,6 +152,9 @@
     flex-direction: column;
     min-height: 85vh;
     &__output {
+      border-width: 1px;
+      border-style: solid;
+      border-color: rgba(0, 0, 0, .1);
       max-height: 75vh;
       overflow: scroll;
       flex: 1;

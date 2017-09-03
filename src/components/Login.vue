@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12 sm6 offset-sm3 class="pt-4">
-      <v-card v-if="!authedNeedsDuo">
+      <v-card flat class="login-border" v-if="!authedNeedsDuo">
         <v-card-title class="headline">
           Login to access Nautilus:
         </v-card-title>
@@ -11,10 +11,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn @click.native="authenticateUser" primary large right bottom>Submit</v-btn>
+          <v-btn @click.native="authenticateUser" primary large right bottom outline>Submit</v-btn>
         </v-card-actions>
       </v-card>
-      <v-card v-else>
+      <v-card flat class="login-border duo-card" v-else>
         <Duo />
       </v-card>
     </v-flex>
@@ -82,3 +82,13 @@
     },
   };
 </script>
+<style>
+  .duo-card {
+    height: 330px !important;
+  }
+  .login-border {
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, .1);
+  }
+</style>
