@@ -15,7 +15,7 @@ import { apiRouter, wsRouter } from './router';
 import connectDatabase from './data/db';
 
 const jwtSecret = process.env.JWT_SECRET || 'twoseventythree tomato sauce';
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost/nautilus';
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost/nautilus2';
 
 /**
  * JWT verify function for WebSocket connection
