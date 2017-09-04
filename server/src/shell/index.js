@@ -63,7 +63,7 @@ export default (ctx) => {
   ps.stdout.on('data', (chunk) => {
     if (chunk.toString().indexOf('###') !== -1) { // listen for an End-of-Output token
       const htmlizedOutput = Buffer.concat(outputBuffs).toString().replace(/[\n\r]/img, '<br>');
-      ctx.message.send('commandResponse', htmlizedOutput);
+      ctx.websocket.send('commandResponse', htmlizedOutput);
       outputBuffs = [];
     } else {
       outputBuffs.push(chunk);
