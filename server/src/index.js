@@ -49,7 +49,6 @@ websockify(wsApp, {
  */
 pino.debug('Initializing middleware');
 app.use(helmet());
-wsApp.ws.use(helmet());
 app.use(bodyParser());
 
 /* Catch 401s */
