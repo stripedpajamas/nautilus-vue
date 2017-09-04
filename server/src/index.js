@@ -55,11 +55,9 @@ app.use(bodyParser());
 app.use((ctx, next) => (
   next().catch((err) => {
     if (err.status === 401) {
-      if (ctx.url !== '/favicon.ico') {
-        pino.warn(ctx, 'Attempt to access protected resource without Authorization');
-        ctx.status = 401;
-        ctx.body = 'Protected resource, use Authorization header to get access.';
-      }
+      pino.warn(ctx, 'Attempt to access protected resource without Authorization');
+      ctx.status = 401;
+      ctx.body = 'Protected resource, use Authorization header to get access.';
     } else {
       throw err;
     }
