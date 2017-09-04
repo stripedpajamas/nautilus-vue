@@ -1,5 +1,5 @@
 <template>
-  <v-app light>
+  <v-app light toolbar>
     <v-navigation-drawer
       v-if="isAuthenticated"
       persistent
