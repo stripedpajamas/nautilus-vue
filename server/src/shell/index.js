@@ -5,7 +5,7 @@ import pino from '../lib/logger';
 const PSDIR = process.env.PSDIR;
 pino.debug({ PSDIR }, 'PowerShell directory set');
 
-const init = (socket, connectionInfo) => {
+const init = (ps, socket, connectionInfo) => {
   pino.debug(connectionInfo, 'Starting a new PowerShell session');
   socket.send('Please wait while I connect you to Office 365...');
   let params;
@@ -14,19 +14,19 @@ const init = (socket, connectionInfo) => {
   } else {
     params = `-Domain ${connectionInfo.domain}`;
   }
-  // const initCmd = `& '${path.resolve(psdir, '_launcher_specified.ps1')}' ${params}`;
-  // ps.stdin.write(initCmd);
-  // ps.stdin.write('\r\n');
+  const initCmd = `& '${path.resolve(PSDIR, '_launcher_specified.ps1')}' ${params}`;
+  ps.stdin.write(initCmd);
+  ps.stdin.write('\r\n');
 };
 
-const handleCommand = (socket, command) => {
+const handleCommand = (ps, socket, command) => {
   pino.debug({ command }, 'Received a PowerShell command');
   if (command === 'exit') {
     socket.send('exit');
-    // ps.stdin.write('exit\r\n');
+    ps.stdin.write('exit\r\n');
   } else {
     // deal with sending the command to powershell
-    // ps.stdin.write(`${command}\r\n`);
+    ps.stdin.write(`${command}\r\n`);
   }
 };
 
@@ -42,16 +42,16 @@ export default (ctx) => {
     'Unrestricted',
     '-Command',
     '-'];
-  // const ps = spawn('powershell', args);
+  const ps = spawn('powershell', args);
 
   ctx.websocket.on('message', (message) => {
     const msg = JSON.parse(message);
     switch (msg.type) {
       case 'init':
-        init(ctx.websocket, msg.data);
+        init(ps, ctx.websocket, msg.data);
         break;
       case 'command':
-        handleCommand(ctx.websocket, msg.data);
+        handleCommand(ps, ctx.websocket, msg.data);
         break;
       default:
         break;
@@ -59,23 +59,23 @@ export default (ctx) => {
   });
 
   // deal with receiving output from powershell and sending it to socket
-  // let outputBuffs = [];
-  // ps.stdout.on('data', (chunk) => {
-  //   if (chunk.toString().indexOf('###') !== -1) { // listen for an End-of-Output token
-  //     const htmlizedOutput = Buffer.concat(outputBuffs).toString().replace(/[\n\r]/img, '<br>');
-  //     ctx.message.send('commandResponse', htmlizedOutput);
-  //     outputBuffs = [];
-  //   } else {
-  //     outputBuffs.push(chunk);
-  //   }
-  // });
+  let outputBuffs = [];
+  ps.stdout.on('data', (chunk) => {
+    if (chunk.toString().indexOf('###') !== -1) { // listen for an End-of-Output token
+      const htmlizedOutput = Buffer.concat(outputBuffs).toString().replace(/[\n\r]/img, '<br>');
+      ctx.message.send('commandResponse', htmlizedOutput);
+      outputBuffs = [];
+    } else {
+      outputBuffs.push(chunk);
+    }
+  });
 
   ctx.websocket.on('close', () => {
     pino.debug(ctx, 'Closing WebSocket session');
     // wait for PSSession to close out, then kill PS
     setTimeout(() => {
       pino.debug('Killing PowerShell');
-      // ps.kill();
+      ps.kill();
     }, 2000);
   });
 };
