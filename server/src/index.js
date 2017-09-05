@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import path from 'path';
 import http from 'http';
 import https from 'https';
+import sslify from 'koa-sslify';
 import websockify from 'koa-websocket';
 import le from './lib/cert';
 import pino from './lib/logger';
@@ -122,17 +123,20 @@ pino.debug('Starting up everything');
     process.exit(1);
   }
 
-  let server;
-
-  if (process.env.NODE_ENV === 'production') {
-    server = await https.createServer(le.httpsOptions, le.middleware(app.callback()));
-  } else {
-    server = await http.createServer(app.callback());
-  }
-
   try {
-    await server.listen(process.env.PORT || 443);
-    pino.info(`HTTPS Server started on port ${process.env.PORT || 443}`);
+    let server;
+
+    if (process.env.NODE_ENV === 'production') {
+      server = await https.createServer(le.httpsOptions, le.middleware(app.callback()));
+      await server.listen(443);
+      pino.info('HTTPS Server started on port 443');
+      await http.createServer(le.middleware((new Koa()).use(sslify()).callback())).listen(80);
+      pino.info('HTTP Redirect server started on port 80');
+    } else {
+      server = await http.createServer(app.callback());
+      await server.listen(process.env.PORT || 8080);
+      pino.info(`HTTP Server started on port ${process.env.PORT || 8080}`);
+    }
     await wsApp.listen(6993);
     pino.info('WS Server started on port 6993');
   } catch (e) {
