@@ -9,7 +9,7 @@ import path from 'path';
 import http from 'http';
 import https from 'https';
 import sslify from 'koa-sslify';
-import websockify from 'koa-websocket';
+import websockify from 'koa-wss';
 import le from './lib/cert';
 import pino from './lib/logger';
 import { apiRouter, wsRouter } from './router';
@@ -43,7 +43,7 @@ const app = new Koa();
 const wsApp = new Koa();
 websockify(wsApp, {
   verifyClient,
-});
+}, le.httpsOptions);
 
 /**
  * Middleware init
