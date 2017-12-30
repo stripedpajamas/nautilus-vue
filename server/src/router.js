@@ -266,6 +266,10 @@ apiRouter.put('/users/:id', async (ctx) => {
 /**
  * DNS Users
  */
+dnsRouter.get('/ip', async (ctx) => {
+  pino.debug(ctx, 'DNS IP endpoint requested');
+  ctx.body = { ip: ctx.request.ip };
+});
 dnsRouter.post('/update', async (ctx) => {
   pino.debug(ctx, 'DNS update endpoint requested');
   const { username, password, ip } = ctx.request.body;
