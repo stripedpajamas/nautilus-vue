@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import duo from 'duo_web';
 import pino from './lib/logger';
 import ps from './shell';
+import dns from './shell/dns';
 import User from './data/models/User';
 import Client from './data/models/Client';
 import DuoData from './data/models/Duo';
@@ -15,6 +16,7 @@ const companyId = process.env.COMPANY_ID || 'qv';
  * Router for the API
  */
 const apiRouter = Router({ prefix: '/api' }).loadMethods();
+const dnsRouter = Router({ prefix: '/dns' }).loadMethods();
 const wsRouter = Router().loadMethods();
 
 /**
@@ -261,7 +263,46 @@ apiRouter.put('/users/:id', async (ctx) => {
     });
 });
 
+/**
+ * DNS Users
+ */
+dnsRouter.post('/update', async (ctx) => {
+  pino.debug(ctx, 'DNS update endpoint requested');
+  const { username, password, ip } = ctx.request.body;
+  // first see if this is a good IP address
+  const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  if (!ipRegex.test(ip)) {
+    ctx.body = { ok: false, message: 'Invalid IP address' };
+  } else {
+    const user = await auth.authenticateDNSUser(username, password);
+    if (user.error) {
+      pino.warn(user, 'User authentication failed');
+      ctx.status = 401;
+      ctx.body = { ok: false, message: user.error };
+    } else {
+      pino.info(user, 'User authenticated successfully, updating DNS');
+      dns.update(username, ip);
+      ctx.body = { ok: true };
+    }
+  }
+});
+dnsRouter.post('/add', async (ctx) => {
+  pino.debug(ctx, 'Register new DNS user endpoint requested');
+  const { username, password } = ctx.request.body;
+  try {
+    await auth.registerDNSUser({ username, password });
+    pino.info({ username }, 'DNS user added successfully');
+    ctx.body = { ok: true };
+  } catch (e) {
+    pino.error({ ctx, username, error: e.message }, 'Failed to add user');
+    ctx.status = 503;
+    ctx.body = { ok: false, message: e.message };
+  }
+});
+
+
 export {
   apiRouter,
+  dnsRouter,
   wsRouter,
 };

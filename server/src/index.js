@@ -12,7 +12,7 @@ import sslify from 'koa-sslify';
 import websockify from 'koa-wss';
 import le from './lib/cert';
 import pino from './lib/logger';
-import { apiRouter, wsRouter } from './router';
+import { apiRouter, dnsRouter, wsRouter } from './router';
 import connectDatabase from './data/db';
 
 const jwtSecret = process.env.JWT_SECRET || 'twoseventythree tomato sauce';
@@ -83,11 +83,11 @@ pino.debug('Serving up the Vue app');
 app.use(serve(path.resolve(__dirname, '../../dist')));
 
 /* Lock down routes with JWTs */
-app.use(koaJwt({ secret: jwtSecret }).unless({ method: 'OPTIONS', path: [/^\/api\/users\/login/] }));
+app.use(koaJwt({ secret: jwtSecret }).unless({ method: 'OPTIONS', path: [/^\/(?:api\/users\/login)|(?:dns)/] }));
 
 /* Check for DB connection on every API request */
 app.use((ctx, next) => {
-  if (ctx.path.includes('/api')) {
+  if (ctx.path.includes('/api') || ctx.path.includes('/dns')) {
     pino.debug(ctx, 'API endpoint hit, checking connection to MongoDB');
     ctx.assert(mongoose.connection.readyState === 1, 503, 'Not connected to MongoDB');
   }
@@ -97,6 +97,7 @@ app.use((ctx, next) => {
 /* Load routes */
 pino.debug('Loading routes for API and WebSocket');
 app.use(apiRouter.middleware());
+app.use(dnsRouter.middleware());
 wsApp.ws.use(wsRouter.middleware());
 
 /* Serve Vue app */
