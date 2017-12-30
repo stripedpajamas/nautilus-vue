@@ -140,6 +140,6 @@ pino.debug('Starting up everything');
     await wsApp.listen(6993);
     pino.info('WS Server started on port 6993');
   } catch (e) {
-    pino.error({ error: e.message }, 'Failed to start servers');
+    pino.error(e, 'Failed to start servers');
   }
 })();

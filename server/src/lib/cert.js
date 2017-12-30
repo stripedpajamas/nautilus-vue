@@ -2,11 +2,11 @@ import greenlock from 'greenlock-express';
 import path from 'path';
 import os from 'os';
 
-const domains = ['nautilus.quo.cc', 'nautilus.now.sh'];
+const domains = ['nautilus.quo.cc'];
 
 // Let's Encrypt
 const le = greenlock.create({
-  server: 'staging', // in production use 'https://acme-v01.api.letsencrypt.org/directory'
+  server: 'production', // in production use 'https://acme-v01.api.letsencrypt.org/directory'
   configDir: path.resolve(os.homedir(), 'letsencrypt', 'etc'),
   approveDomains: (opts, certs, cb) => {
     const options = opts;
