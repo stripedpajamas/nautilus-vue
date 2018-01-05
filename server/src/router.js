@@ -290,20 +290,6 @@ dnsRouter.post('/update', async (ctx) => {
     }
   }
 });
-dnsRouter.post('/add', async (ctx) => {
-  pino.debug(ctx, 'Register new DNS user endpoint requested');
-  const { username, password } = ctx.request.body;
-  try {
-    await auth.registerDNSUser({ username, password });
-    pino.info({ username }, 'DNS user added successfully');
-    ctx.body = { ok: true };
-  } catch (e) {
-    pino.error({ ctx, username, error: e.message }, 'Failed to add user');
-    ctx.status = 503;
-    ctx.body = { ok: false, message: e.message };
-  }
-});
-
 
 export {
   apiRouter,
