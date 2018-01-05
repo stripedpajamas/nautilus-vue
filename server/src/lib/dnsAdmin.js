@@ -1,6 +1,9 @@
 import readline from 'readline';
 import inquirer from 'inquirer';
 import auth from '../auth';
+import connectDatabase from '../data/db';
+
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost/nautilus2';
 
 const questions = [
   {
@@ -15,17 +18,7 @@ const questions = [
   },
 ];
 
-inquirer.prompt(questions).then(async (answers) => {
-  const payload = {
-    username: answers.username,
-    password: answers.password,
-  };
-  try {
-    await auth.registerDNSUser(payload);
-    console.log('Done!');
-  } catch (e) {
-    console.log(e);
-  }
+const close = () => {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -35,4 +28,25 @@ inquirer.prompt(questions).then(async (answers) => {
     rl.close();
     process.exit();
   });
+};
+
+inquirer.prompt(questions).then(async (answers) => {
+  try {
+    await connectDatabase(mongoUri);
+  } catch (e) {
+    console.log('Couldn\'t connect to database :(');
+    close();
+  }
+  const payload = {
+    username: answers.username,
+    password: answers.password,
+  };
+  try {
+    await auth.registerDNSUser(payload);
+    console.log('Done!');
+    close();
+  } catch (e) {
+    console.log(e);
+    close();
+  }
 });
