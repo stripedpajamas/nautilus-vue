@@ -1,3 +1,4 @@
+import readline from 'readline';
 import inquirer from 'inquirer';
 import auth from '../auth';
 
@@ -22,9 +23,16 @@ inquirer.prompt(questions).then(async (answers) => {
   try {
     await auth.registerDNSUser(payload);
     console.log('Done!');
-    process.exit();
   } catch (e) {
     console.log(e);
-    process.exit(1);
   }
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  rl.question('Press any key to continue...', () => {
+    rl.close();
+    process.exit();
+  });
 });
