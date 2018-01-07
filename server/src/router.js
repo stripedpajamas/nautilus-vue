@@ -5,6 +5,7 @@ import pino from './lib/logger';
 import ps from './shell';
 import dns from './shell/dns';
 import User from './data/models/User';
+import DNSUser from './data/models/DNSUser';
 import Client from './data/models/Client';
 import DuoData from './data/models/Duo';
 import auth from './auth';
@@ -265,6 +266,74 @@ apiRouter.put('/users/:id', async (ctx) => {
 
 /**
  * DNS Users
+ */
+apiRouter.get('/users/dns', async (ctx) => {
+  pino.debug(ctx, 'DNS Users list endpoint requested');
+  try {
+    const data = await DNSUser.find({}, 'username');
+    pino.debug(data, 'DNS User list retrieved');
+    ctx.body = { ok: true, data };
+  } catch (e) {
+    pino.error({ ctx, error: e.message }, 'Failed to retrieve DNS user list');
+    ctx.status = 503;
+    ctx.body = { ok: false, message: e.message };
+  }
+});
+
+apiRouter.post('/users/dns', async (ctx) => {
+  pino.debug(ctx, 'Register new DNS user endpoint requested');
+  const { username, password } = ctx.request.body;
+  try {
+    await auth.registerDNSUser({ username, password });
+    pino.info({ username }, 'DNS User added successfully');
+    ctx.body = { ok: true };
+  } catch (e) {
+    pino.error({ ctx, username, error: e.message }, 'Failed to add DNS user');
+    ctx.status = 503;
+    ctx.body = { ok: false, message: e.message };
+  }
+});
+
+apiRouter.del('/users/dns/:id', async (ctx) => {
+  pino.debug(ctx, 'Delete DNS user endpoint requested');
+  try {
+    await DNSUser.findByIdAndRemove(ctx.params.id);
+    pino.info({ id: ctx.params.id }, 'DNS User deleted successfully');
+    ctx.body = { ok: true };
+  } catch (e) {
+    pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to delete DNS user');
+    ctx.status = 503;
+    ctx.body = { ok: false, message: e.message };
+  }
+});
+
+apiRouter.put('/users/dns/:id', async (ctx) => {
+  pino.debug(ctx, 'Edit DNS user endpoint requested');
+  const { username, password } = ctx.request.body;
+  return DNSUser.findById(ctx.params.id)
+      .then((u) => {
+        pino.debug({ id: ctx.params.id }, 'Found DNS user to edit in database');
+        const user = u;
+        user.username = username;
+        if (password) {
+          pino.debug({ id: ctx.params.id }, 'Password change requested for this DNS user');
+          user.password = password;
+        }
+        return user.save()
+          .then(() => {
+            pino.info({ username, id: ctx.params.id }, 'Successfully edited DNS user');
+            ctx.body = { ok: true };
+          });
+      })
+    .catch((e) => {
+      pino.error({ ctx, id: ctx.params.id, error: e.message }, 'Failed to edit DNS user');
+      ctx.status = 503;
+      ctx.body = { ok: false, message: e.message };
+    });
+});
+
+/**
+ * DNS Tasks
  */
 dnsRouter.get('/ip', async (ctx) => {
   pino.debug(ctx, 'DNS IP endpoint requested');

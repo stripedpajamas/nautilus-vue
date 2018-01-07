@@ -82,7 +82,7 @@ wsApp.use(setCors);
 pino.debug('Serving up the Vue app');
 app.use(serve(path.resolve(__dirname, '../../dist')));
 
-/* Lock down routes with JWTs */
+/* Lock down routes with JWTs unless route = /api/users/login OR /dns OR method = OPTIONS */
 app.use(koaJwt({ secret: jwtSecret }).unless({ method: 'OPTIONS', path: [/^\/(?:api\/users\/login)|(?:dns)/] }));
 
 /* Check for DB connection on every API request */

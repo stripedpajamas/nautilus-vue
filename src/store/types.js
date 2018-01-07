@@ -7,6 +7,7 @@ export const CLEAR_ERROR = 'CLEAR_ERROR';
 export const CLEAR_SUCCESS = 'CLEAR_SUCCESS';
 export const UPDATE_CLIENT_LIST = 'UPDATE_CLIENT_LIST';
 export const UPDATE_USER_LIST = 'UPDATE_USER_LIST';
+export const UPDATE_DNS_USER_LIST = 'UPDATE_USER_LIST';
 export const SET_TOKEN = 'SET_TOKEN';
 export const CLEAR_TOKEN = 'CLEAR_TOKEN';
 
@@ -80,3 +81,27 @@ export const CANCEL_UPDATE_USER = 'CANCEL_UPDATE_USER';
 export const SET_USER_TO_REMOVE = 'SET_USER_TO_REMOVE';
 export const CANCEL_REMOVE_USER = 'CANCEL_REMOVE_USER';
 export const REMOVE_USER = 'REMOVE_USER';
+
+
+/**
+ * Adding a DNS user
+ */
+export const SET_NEW_DNS_USER_NAME = 'SET_NEW_DNS_USER_NAME';
+export const SET_NEW_DNS_USER_PASSWORD = 'SET_NEW_DNS_USER_PASSWORD';
+export const ADD_NEW_DNS_USER = 'ADD_NEW_DNS_USER';
+
+/**
+ * Updating a user
+ */
+export const SET_DNS_USER_TO_UPDATE = 'SET_DNS_USER_TO_UPDATE';
+export const UPDATE_DNS_USER_NAME = 'UPDATE_DNS_USER_NAME';
+export const UPDATE_DNS_USER_PASSWORD = 'UPDATE_DNS_USER_PASSWORD';
+export const UPDATE_DNS_USER = 'UPDATE_DNS_USER';
+export const CANCEL_UPDATE_DNS_USER = 'CANCEL_UPDATE_DNS_USER';
+
+/**
+ * Removing a user
+ */
+export const SET_DNS_USER_TO_REMOVE = 'SET_DNS_USER_TO_REMOVE';
+export const CANCEL_REMOVE_DNS_USER = 'CANCEL_REMOVE_DNS_USER';
+export const REMOVE_DNS_USER = 'REMOVE_DNS_USER';
