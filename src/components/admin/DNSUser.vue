@@ -55,7 +55,7 @@
                 autocomplete
               ></v-select>
               <transition name="slide-x-transition">
-                <v-card flat v-if="Object.keys(userToUpdate).length">
+                <v-card flat v-if="Object.keys(DNSUserToUpdate).length">
                   <v-card-text>
                     <v-text-field label="Username" v-model="updatedUsernameModel"
                                   autofocus></v-text-field>
@@ -99,7 +99,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click.native="cancelRemoveUser" bottom right outline v-if="userToRemove._id">Cancel</v-btn>
+            <v-btn @click.native="cancelRemoveUser" bottom right outline v-if="DNSUserToRemove._id">Cancel</v-btn>
             <v-btn @click.native="removeUser" bottom right error outline :disabled="!DNSUserToRemove._id">
               Delete
             </v-btn>
