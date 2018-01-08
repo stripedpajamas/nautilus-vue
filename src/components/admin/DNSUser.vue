@@ -113,7 +113,7 @@
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex';
   import {
-    UPDATE_USER_LIST,
+    UPDATE_DNS_USER_LIST,
     SET_NEW_DNS_USER_NAME,
     SET_NEW_DNS_USER_PASSWORD,
     ADD_NEW_DNS_USER,
