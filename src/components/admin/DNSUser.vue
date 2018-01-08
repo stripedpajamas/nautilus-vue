@@ -161,7 +161,7 @@
         const passwordsMatch = this.newUserPasswordRules[0](this.newUserConfirmPassword) === true;
         return !this.newUsernameModel || !this.newUserPasswordModel || !passwordsMatch;
       },
-      newDNSUsernameModel: {
+      newUsernameModel: {
         get() {
           return this.newDNSUser.username;
         },

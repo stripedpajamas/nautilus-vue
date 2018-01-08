@@ -75,19 +75,17 @@ export default {
   actions: {
     [UPDATE_DNS_USER_LIST]({ commit, state, rootState }) {
       const url = `${rootState.main.apiHost}/api/users/dns`;
-      if (state.isAuthenticated && state.user.isAdmin) {
-        axios.get(url, {
-          headers: { Authorization: `Bearer ${rootState.main.token}` },
-        }).then((res) => {
-          if (res.status === 200 && res.data.ok) {
-            commit(UPDATE_DNS_USER_LIST, { users: res.data.data });
-          } else {
-            commit(ADD_ERROR, { message: `API call failed: ${res.status}` });
-          }
-        }).catch((e) => {
-          commit(ADD_ERROR, { message: `API call failed: ${e.message}` });
-        });
-      }
+      axios.get(url, {
+        headers: { Authorization: `Bearer ${rootState.main.token}` },
+      }).then((res) => {
+        if (res.status === 200 && res.data.ok) {
+          commit(UPDATE_DNS_USER_LIST, { users: res.data.data });
+        } else {
+          commit(ADD_ERROR, { message: `API call failed: ${res.status}` });
+        }
+      }).catch((e) => {
+        commit(ADD_ERROR, { message: `API call failed: ${e.message}` });
+      });
     },
     [SET_NEW_DNS_USER_NAME]({ commit }, { username }) {
       commit(SET_NEW_DNS_USER_NAME, { username });
