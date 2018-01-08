@@ -147,9 +147,9 @@
     },
     computed: {
       ...mapState({
-        newDNSUser: state => state.user.newDNSUser,
-        DNSUserToUpdate: state => state.user.DNSUserToUpdate,
-        DNSUserToRemove: state => state.user.DNSUserToRemove,
+        newDNSUser: state => state.dnsuser.newDNSUser,
+        DNSUserToUpdate: state => state.dnsuser.DNSUserToUpdate,
+        DNSUserToRemove: state => state.dnsuser.DNSUserToRemove,
       }),
       ...mapGetters([
         'DNSUsernames',
