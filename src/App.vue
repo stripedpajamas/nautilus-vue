@@ -153,6 +153,10 @@
               title: 'Clients',
               route: '/admin/clients',
             },
+            {
+              title: 'DNS Users',
+              route: '/admin/dnsusers',
+            },
           ],
         },
         sidebarShell: {

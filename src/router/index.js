@@ -5,6 +5,7 @@ import ClientSelect from '@/components/ClientSelect';
 import Shell from '@/components/Shell';
 import ClientAdmin from '@/components/admin/Client';
 import UserAdmin from '@/components/admin/User';
+import DNSUserAdmin from '@/components/admin/DNSUser';
 import UserSettings from '@/components/user/UserSettings';
 
 Vue.use(Router);
@@ -35,6 +36,11 @@ export default new Router({
       path: '/admin/users',
       name: 'User Management',
       component: UserAdmin,
+    },
+    {
+      path: '/admin/dnsusers',
+      name: 'DNS User Management',
+      component: DNSUserAdmin,
     },
     {
       path: '/user',
