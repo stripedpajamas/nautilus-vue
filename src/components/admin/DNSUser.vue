@@ -155,7 +155,7 @@
         'DNSUsernames',
       ]),
       removeTargets() {
-        return this.DNSUsernames.filter(username => username !== this.DNSUser.username);
+        return this.DNSUsernames;
       },
       newUserSaveDisable() {
         const passwordsMatch = this.newUserPasswordRules[0](this.newUserConfirmPassword) === true;
