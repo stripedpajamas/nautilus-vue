@@ -34,7 +34,7 @@ export default {
       })
       .catch(e => ({ error: e.message }));
   },
-  registerDNSUser({ username, password }) {
-    return DNSUser.create({ username, password });
+  registerDNSUser({ company, username, password }) {
+    return DNSUser.create({ company, username, password });
   },
 };

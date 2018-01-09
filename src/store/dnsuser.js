@@ -49,6 +49,7 @@ export default {
     [ADD_NEW_DNS_USER](state) {
       // resets state
       Vue.set(state, 'newDNSUser', {
+        company: '',
         username: '',
         password: '',
       });
@@ -82,7 +83,7 @@ export default {
     },
   },
   actions: {
-    [UPDATE_DNS_USER_LIST]({ commit, state, rootState }) {
+    [UPDATE_DNS_USER_LIST]({ commit, rootState }) {
       const url = `${rootState.main.apiHost}/api/users/dns`;
       axios.get(url, {
         headers: { Authorization: `Bearer ${rootState.main.token}` },
