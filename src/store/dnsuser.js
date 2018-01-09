@@ -142,8 +142,8 @@ export default {
     },
     [UPDATE_DNS_USER]({ commit, state, dispatch, rootState }) {
       const url = `${rootState.main.apiHost}/api/users/dns/${state.DNSUserToUpdate._id}`;
-      const { username, password } = state.DNSUserToUpdate;
-      axios.put(url, { username, password }, {
+      const { company, username, password } = state.DNSUserToUpdate;
+      axios.put(url, { company, username, password }, {
         headers: { Authorization: `Bearer ${rootState.main.token}` },
       }).then((res) => {
         if (res.status === 200) {
