@@ -4,10 +4,12 @@ import {
   ADD_ERROR,
   ADD_SUCCESS,
   UPDATE_DNS_USER_LIST,
+  SET_NEW_DNS_USER_COMPANY,
   SET_NEW_DNS_USER_NAME,
   SET_NEW_DNS_USER_PASSWORD,
   ADD_NEW_DNS_USER,
   SET_DNS_USER_TO_UPDATE,
+  UPDATE_DNS_USER_COMPANY,
   UPDATE_DNS_USER_NAME,
   UPDATE_DNS_USER_PASSWORD,
   UPDATE_DNS_USER,
@@ -21,6 +23,7 @@ export default {
   state: {
     DNSUsers: [],
     newDNSUser: {
+      company: '',
       username: '',
       password: '',
     },
@@ -33,6 +36,9 @@ export default {
   mutations: {
     [UPDATE_DNS_USER_LIST](state, { users }) {
       Vue.set(state, 'DNSUsers', users);
+    },
+    [SET_NEW_DNS_USER_COMPANY](state, { company }) {
+      Vue.set(state.newDNSUser, 'company', company);
     },
     [SET_NEW_DNS_USER_NAME](state, { username }) {
       Vue.set(state.newDNSUser, 'username', username);
@@ -49,6 +55,9 @@ export default {
     },
     [SET_DNS_USER_TO_UPDATE](state, { user }) {
       Vue.set(state, 'DNSUserToUpdate', user);
+    },
+    [UPDATE_DNS_USER_COMPANY](state, { company }) {
+      Vue.set(state.DNSUserToUpdate, 'company', company);
     },
     [UPDATE_DNS_USER_NAME](state, { username }) {
       Vue.set(state.DNSUserToUpdate, 'username', username);
@@ -87,6 +96,9 @@ export default {
         commit(ADD_ERROR, { message: `API call failed: ${e.message}` });
       });
     },
+    [SET_NEW_DNS_USER_COMPANY]({ commit }, { company }) {
+      commit(SET_NEW_DNS_USER_COMPANY, { company });
+    },
     [SET_NEW_DNS_USER_NAME]({ commit }, { username }) {
       commit(SET_NEW_DNS_USER_NAME, { username });
     },
@@ -112,6 +124,9 @@ export default {
     [SET_DNS_USER_TO_UPDATE]({ commit, state }, { username }) {
       const user = state.DNSUsers.find(u => u.username === username);
       if (user) commit(SET_DNS_USER_TO_UPDATE, { user: Object.assign({}, user) });
+    },
+    [UPDATE_DNS_USER_COMPANY]({ commit }, { company }) {
+      commit(UPDATE_DNS_USER_COMPANY, { company });
     },
     [UPDATE_DNS_USER_NAME]({ commit }, { username }) {
       commit(UPDATE_DNS_USER_NAME, { username });

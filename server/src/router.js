@@ -270,7 +270,7 @@ apiRouter.put('/users/:id', async (ctx) => {
 apiRouter.get('/users/dns', async (ctx) => {
   pino.debug(ctx, 'DNS Users list endpoint requested');
   try {
-    const data = await DNSUser.find({}, 'username');
+    const data = await DNSUser.find({}, 'company username');
     pino.debug(data, 'DNS User list retrieved');
     ctx.body = { ok: true, data };
   } catch (e) {
@@ -282,13 +282,13 @@ apiRouter.get('/users/dns', async (ctx) => {
 
 apiRouter.post('/users/dns', async (ctx) => {
   pino.debug(ctx, 'Register new DNS user endpoint requested');
-  const { username, password } = ctx.request.body;
+  const { company, username, password } = ctx.request.body;
   try {
-    await auth.registerDNSUser({ username, password });
-    pino.info({ username }, 'DNS User added successfully');
+    await auth.registerDNSUser({ company, username, password });
+    pino.info({ company, username }, 'DNS User added successfully');
     ctx.body = { ok: true };
   } catch (e) {
-    pino.error({ ctx, username, error: e.message }, 'Failed to add DNS user');
+    pino.error({ ctx, company, username, error: e.message }, 'Failed to add DNS user');
     ctx.status = 503;
     ctx.body = { ok: false, message: e.message };
   }
@@ -309,19 +309,20 @@ apiRouter.del('/users/dns/:id', async (ctx) => {
 
 apiRouter.put('/users/dns/:id', async (ctx) => {
   pino.debug(ctx, 'Edit DNS user endpoint requested');
-  const { username, password } = ctx.request.body;
+  const { company, username, password } = ctx.request.body;
   return DNSUser.findById(ctx.params.id)
       .then((u) => {
         pino.debug({ id: ctx.params.id }, 'Found DNS user to edit in database');
         const user = u;
         user.username = username;
+        user.company = company;
         if (password) {
           pino.debug({ id: ctx.params.id }, 'Password change requested for this DNS user');
           user.password = password;
         }
         return user.save()
           .then(() => {
-            pino.info({ username, id: ctx.params.id }, 'Successfully edited DNS user');
+            pino.info({ company, username, id: ctx.params.id }, 'Successfully edited DNS user');
             ctx.body = { ok: true };
           });
       })

@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const DNSUserSchema = new mongoose.Schema({
+  company: {
+    type: String,
+    required: true,
+  },
   username: {
     type: String,
     required: true,

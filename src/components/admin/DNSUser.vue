@@ -19,7 +19,8 @@
           <v-form ref="newUserForm">
             <v-card-title class="title">Add DNS User</v-card-title>
             <v-card-text>
-              <v-text-field autofocus label="Username" v-model="newUsernameModel"></v-text-field>
+              <v-text-field autofocus label="Company" v-model="newUserCompanyModel"></v-text-field>
+              <v-text-field label="Username" v-model="newUsernameModel"></v-text-field>
               <v-text-field label="Password" type="password"
                             v-model="newUserPasswordModel"></v-text-field>
               <v-text-field
@@ -57,8 +58,8 @@
               <transition name="slide-x-transition">
                 <v-card flat v-if="Object.keys(DNSUserToUpdate).length">
                   <v-card-text>
-                    <v-text-field label="Username" v-model="updatedUsernameModel"
-                                  autofocus></v-text-field>
+                    <v-text-field autofocus label="Company" v-model="updatedUserCompanyModel"></v-text-field>
+                    <v-text-field label="Username" v-model="updatedUsernameModel"></v-text-field>
                     <v-text-field
                       label="Password"
                       type="password"
@@ -161,6 +162,14 @@
         const passwordsMatch = this.newUserPasswordRules[0](this.newUserConfirmPassword) === true;
         return !this.newUsernameModel || !this.newUserPasswordModel || !passwordsMatch;
       },
+      newUserCompanyModel: {
+        get() {
+          return this.newDNSUser.company;
+        },
+        set(newVal) {
+          this.setNewDNSUserCompany({ company: newVal });
+        },
+      },
       newUsernameModel: {
         get() {
           return this.newDNSUser.username;
@@ -183,6 +192,14 @@
         },
         set(newVal) {
           this.setDNSUserToUpdate({ username: newVal });
+        },
+      },
+      updatedUserCompanyModel: {
+        get() {
+          return this.DNSUserToUpdate.company;
+        },
+        set(newVal) {
+          this.updateDNSUserCompany({ company: newVal });
         },
       },
       updatedUsernameModel: {
@@ -213,10 +230,12 @@
     methods: {
       ...mapActions({
         updateDNSUserList: UPDATE_DNS_USER_LIST,
+        setNewDNSUserCompany: SET_NEW_DNS_USER_COMPANY,
         setNewDNSUsername: SET_NEW_DNS_USER_NAME,
         setNewDNSUserPassword: SET_NEW_DNS_USER_PASSWORD,
         addNewDNSUserAction: ADD_NEW_DNS_USER,
         setDNSUserToUpdate: SET_DNS_USER_TO_UPDATE,
+        updateDNSUserCompany: UPDATE_DNS_USER_COMPANY,
         updateDNSUsername: UPDATE_DNS_USER_NAME,
         updateDNSUserPassword: UPDATE_DNS_USER_PASSWORD,
         updateDNSUserAction: UPDATE_DNS_USER,
