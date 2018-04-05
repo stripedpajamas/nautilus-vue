@@ -38,7 +38,7 @@ export default new Router({
       component: UserAdmin,
     },
     {
-      path: '/admin/dnsusers',
+      path: '/dnsusers',
       name: 'DNS User Management',
       component: DNSUserAdmin,
     },

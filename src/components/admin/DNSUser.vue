@@ -77,7 +77,7 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click.native="cancelUpdateUser" bottom right outline>Cancel</v-btn>
+                    <v-btn @click.native="cancelUpdateDNSUser" bottom right outline>Cancel</v-btn>
                     <v-btn @click.native="updateUser" bottom right primary outline type="submit">Save</v-btn>
                   </v-card-actions>
                 </v-card>
@@ -100,8 +100,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn @click.native="cancelRemoveUser" bottom right outline v-if="DNSUserToRemove._id">Cancel</v-btn>
-            <v-btn @click.native="removeUser" bottom right error outline :disabled="!DNSUserToRemove._id">
+            <v-btn @click.native="cancelRemoveDNSUser" bottom right outline v-if="DNSUserToRemove._id">Cancel</v-btn>
+            <v-btn @click.native="removeDNSUser" bottom right error outline :disabled="!DNSUserToRemove._id">
               Delete
             </v-btn>
           </v-card-actions>

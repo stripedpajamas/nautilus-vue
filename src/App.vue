@@ -59,6 +59,16 @@
             </v-list-tile-action>
           </v-list-tile>
         </v-list-group>
+        <v-list-group :value="sidebarDNS.active" :key="sidebarDNS.title">
+          <v-list-tile slot="item" class="list__tile--link" :to="sidebarDNS.route">
+            <v-list-tile-action>
+              <v-icon>{{ sidebarDNS.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ sidebarDNS.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-navigation-drawer
@@ -153,10 +163,6 @@
               title: 'Clients',
               route: '/admin/clients',
             },
-            {
-              title: 'DNS Users',
-              route: '/admin/dnsusers',
-            },
           ],
         },
         sidebarShell: {
@@ -164,6 +170,12 @@
           icon: 'keyboard',
           title: 'Shell',
           route: '/shell',
+        },
+        sidebarDNS: {
+          active: false,
+          icon: 'language',
+          title: 'DNS Users',
+          route: '/dnsusers',
         },
       };
     },

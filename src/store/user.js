@@ -38,7 +38,7 @@ export default {
   state: {
     loginUsername: '',
     loginPassword: '',
-    isAuthenticated: false,
+    isAuthenticated: false, // testing
     authedNeedsDuo: false,
     duo: {
       api: '',
