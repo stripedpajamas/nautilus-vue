@@ -32,6 +32,7 @@ export default {
   },
   getters: {
     DNSUsernames: state => state.DNSUsers.map(u => u.username).sort(),
+    DNSCompanies: state => Array.from(new Set(state.DNSUsers.map(u => u.company))).sort(),
   },
   mutations: {
     [UPDATE_DNS_USER_LIST](state, { users }) {

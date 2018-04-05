@@ -107,6 +107,33 @@
           </v-card-actions>
         </v-card>
       </v-tabs-content>
+      <v-tabs-content id="tab-4">
+        <v-card flat>
+          <v-card-title class="title">Reports</v-card-title>
+          <v-card-text>
+            <v-select
+              :items="companiesDropdown"
+              label="Filter by Company"
+              v-model="selectedDNSCompany"
+            ></v-select>
+            <v-data-table
+              :headers="headers"
+              :items="filteredCompanies"
+              item-key="username"
+            >
+              <template slot="items" scope="props">
+                <td>{{ props.item.company }}</td>
+                <td>{{ props.item.username }}</td>
+              </template>
+              <template slot="pageText" scope="props">
+                Total items: {{ props.itemsLength }}
+              </template>
+            </v-data-table>
+          </v-card-text>
+          <v-card-actions>
+          </v-card-actions>
+        </v-card>
+      </v-tabs-content>
     </v-tabs-items>
   </v-tabs>
 </template>
@@ -134,7 +161,7 @@
     name: 'DNSUserAdmin',
     data() {
       return {
-        items: ['Add DNS User', 'Edit DNS User', 'Remove DNS User'],
+        items: ['Add DNS User', 'Edit DNS User', 'Remove DNS User', 'Reports'],
         newUserConfirmPassword: '',
         updateUserConfirmPassword: '',
         newUserPasswordRules: [
@@ -143,6 +170,21 @@
         updateUserPasswordRules: [
           val => val === this.DNSUserToUpdate.password || 'Passwords must match!',
         ],
+        headers: [
+          {
+            text: 'Company',
+            value: 'company',
+            align: 'left',
+            sortable: true,
+          },
+          {
+            text: 'Username/Hostname',
+            value: 'username',
+            align: 'left',
+            sortable: true,
+          },
+        ],
+        selectedDNSCompany: '',
       };
     },
     mounted() {
@@ -150,13 +192,23 @@
     },
     computed: {
       ...mapState({
+        dnsUsers: state => state.dnsuser.DNSUsers,
         newDNSUser: state => state.dnsuser.newDNSUser,
         DNSUserToUpdate: state => state.dnsuser.DNSUserToUpdate,
         DNSUserToRemove: state => state.dnsuser.DNSUserToRemove,
       }),
       ...mapGetters([
         'DNSUsernames',
+        'DNSCompanies',
       ]),
+      companiesDropdown() {
+        return ['Show All'].concat(this.DNSCompanies);
+      },
+      filteredCompanies() {
+        return this.selectedDNSCompany && this.selectedDNSCompany !== 'Show All'
+          ? this.dnsUsers.filter(dnsUser => dnsUser.company === this.selectedDNSCompany)
+          : this.dnsUsers;
+      },
       removeTargets() {
         return this.DNSUsernames;
       },
